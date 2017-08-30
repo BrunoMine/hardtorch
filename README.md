@@ -1,4 +1,4 @@
-HardTorch v1.0.0
+HardTorch v1.0.0-beta
 ================
 
 Esse mod torna as tochas consumiveis e iluminam caso estiver quando em mãos
