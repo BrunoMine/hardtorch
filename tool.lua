@@ -11,8 +11,26 @@
   ]]
 
 
+-- Encontrar tocha acessa no inventario
+local find_torch_inv = function(player)
+	local inv = player:get_inventory()
+	-- Verifica cada um dos itens
+	for list_name,list in pairs(inv:get_lists()) do
+		for i,item in ipairs(list) do
+			-- Troca pela tocha apagada
+			if item:get_name() == "hardtorch:torch_tool_on" then
+				return list_name, i, item
+			end
+		end
+	end
+end
+
 -- Apaga todas as tochas que um jogador possui
 hardtorch.apagar_tocha = function(player)
+	-- Remover luz do hud
+	if hardtorch.em_loop[player:get_player_name()] and hardtorch.em_loop[player:get_player_name()].hud_id then
+		player:hud_remove(hardtorch.em_loop[player:get_player_name()].hud_id)
+	end
 	local inv = player:get_inventory()
 	-- Verifica cada um dos itens
 	for _,list in pairs(inv:get_lists()) do
@@ -26,6 +44,23 @@ hardtorch.apagar_tocha = function(player)
 	end
 end
 
+
+-- Elemento HUD luz
+local hud_element = {
+	hud_elem_type = "image",
+	position = {x=0.1, y=1.1},
+	name = "<name>",
+	scale = {x=4, y=4},
+	text = "hardtorch_luz.png",
+	number = 2,
+	item = 3,
+	direction = 0,
+	alignment = {x=0, y=0},
+	offset = {x=0, y=0},
+	size = { x=100, y=100 },
+}
+
+
 -- Inicia loop de verificação apos acender tocha
 local desgaste_loop = (65535/hardtorch.tempo_tocha)*2
 hardtorch.loop_tocha = function(name)
@@ -34,9 +69,10 @@ hardtorch.loop_tocha = function(name)
 	-- Verifica jogador
 	local player = minetest.get_player_by_name(name)
 	if not player then return end
+	
 	-- Verifica tocha
-	local itemstack = player:get_wielded_item()
-	if itemstack:get_name() ~= "hardtorch:torch_tool_on" then
+	local list, i, itemstack = find_torch_inv(player)
+	if not itemstack then
 		-- Encerra loop
 		hardtorch.apagar_tocha(player)
 		hardtorch.em_loop[name] = nil
@@ -44,7 +80,7 @@ hardtorch.loop_tocha = function(name)
 	end
 	-- Adiciona desgaste
 	itemstack:add_wear(desgaste_loop)
-	player:set_wielded_item(itemstack)
+	player:get_inventory():set_stack(list, i, itemstack)
 	
 	-- Verifica se acabou a tocha
 	if itemstack:is_empty() then
@@ -53,6 +89,14 @@ hardtorch.loop_tocha = function(name)
 		hardtorch.em_loop[name] = nil
 		return
 	end
+	
+	-- Verifica se luz do hud foi criada
+	if not hardtorch.em_loop[name].hud_id 
+		or not player:hud_get(hardtorch.em_loop[name].hud_id)
+	then
+		hardtorch.em_loop[name].hud_id = player:hud_add(hud_element)
+	end
+	
 	
 	-- Prepara para proximo loop
 	minetest.after(2, hardtorch.loop_tocha, name)
@@ -68,6 +112,8 @@ hardtorch.acender_tocha = function(itemstack, player)
 	-- Verifica se ja esta acessa (evitar loop duplo)
 	if not hardtorch.em_loop[name] then 
 		hardtorch.em_loop[name] = {lpos=hardtorch.get_lpos(player)}
+		-- Adiciona luz no hud
+		hardtorch.em_loop[name].hud_id = player:hud_add(hud_element)
 		-- Inicia loop de tocha (atraso para dar tempo de atualizar item no inventario)
 		minetest.after(0.3, hardtorch.loop_tocha, name)
 		-- Inicia loop de luz
@@ -125,14 +171,25 @@ minetest.register_tool("hardtorch:torch_tool", {
 minetest.register_tool("hardtorch:torch_tool_on", {
 	description = "Tocha",
 	inventory_image = "default_torch_on_floor.png",
+	wield_image = "hardtorch_torch_tool_on_mao.png",
 	groups = {not_in_creative_inventory = 1},
 	
 	on_use = function(itemstack, user, pointed_thing)
+		-- Remover luz
+		hardtorch.apagar_node_luz(user:get_player_name())
+		if hardtorch.em_loop[user:get_player_name()].hud_id then
+			user:hud_remove(hardtorch.em_loop[user:get_player_name()].hud_id)
+		end
 		itemstack:set_name("hardtorch:torch_tool")
 		return itemstack
 	end,
 	
 	on_drop = function(itemstack, dropper, pos)
+		-- Remover luz
+		hardtorch.apagar_node_luz(dropper:get_player_name())
+		if hardtorch.em_loop[dropper:get_player_name()].hud_id then
+			dropper:hud_remove(hardtorch.em_loop[dropper:get_player_name()].hud_id)
+		end
 		itemstack:set_name("hardtorch:torch_tool")
 		minetest.item_drop(itemstack, dropper, pos)
 		itemstack:clear()

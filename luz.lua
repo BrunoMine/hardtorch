@@ -10,6 +10,7 @@
 	
   ]]
 
+
 -- Pegar coordenada de luz
 hardtorch.get_lpos = function(player)
 	local p = minetest.deserialize(minetest.serialize(player:getpos()))
@@ -70,4 +71,14 @@ hardtorch.loop_luz = function(name)
 	
 end
 
+
+-- Forças extinção de luz
+hardtorch.apagar_node_luz = function(name)
+	if hardtorch.em_loop[name] 
+		and hardtorch.em_loop[name].lpos
+		and minetest.get_node(hardtorch.em_loop[name].lpos).name == "hardtorch:luz" 
+	then
+		minetest.remove_node(hardtorch.em_loop[name].lpos)
+	end
+end
 
