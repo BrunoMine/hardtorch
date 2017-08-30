@@ -1,0 +1,7 @@
+# Configurações aplicaveis para o menu gráfico
+
+
+# Tempo (em segundos) que uma tocha dura acessa.
+# (Precisao de 2 segundos)
+hardtorch_tempo_tocha (Durabilidade da Tocha) int 300
+
