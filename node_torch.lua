@@ -161,21 +161,12 @@ minetest.register_abm({
 	nodenames = {"default:torch", "default:torch_ceiling", "default:torch_wall"},
 	neighbors = {"group:water"},
 	interval = 1,
-	chance = 2,
+	chance = 3,
 	catch_up = false,
 	action = function(pos, node)
-		for _,p in ipairs({
-			{x=pos.x+1, y=pos.y, z=pos.z},
-			{x=pos.x, y=pos.y+1, z=pos.z},
-			{x=pos.x, y=pos.y, z=pos.z+1},
-			{x=pos.x-1, y=pos.y, z=pos.z},
-			{x=pos.x, y=pos.y-1, z=pos.z},
-			{x=pos.x, y=pos.y, z=pos.z-1},
-		}) do
-			if minetest.find_nodes_in_area(p, p, {"group:water"})[1] then
-				hardtorch.som_ext_chama(pos)
-				minetest.remove_node(pos)
-			end
+		if hardtorch.check_torch_area(pos) == false then
+			hardtorch.som_ext_chama(pos)
+			minetest.remove_node(pos)
 		end
 	end,
 })

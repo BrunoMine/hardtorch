@@ -20,6 +20,24 @@ hardtorch.som_ext_chama = function(pos)
 end
 som_ext_chama = hardtorch.som_ext_chama
 
+-- Verificar impedimento no local proximo da tocha
+hardtorch.check_torch_area = function(pos)
+	for _,p in ipairs({
+		{x=pos.x+1, y=pos.y, z=pos.z},
+		{x=pos.x, y=pos.y+1, z=pos.z},
+		{x=pos.x, y=pos.y, z=pos.z+1},
+		{x=pos.x-1, y=pos.y, z=pos.z},
+		{x=pos.x, y=pos.y-1, z=pos.z},
+		{x=pos.x, y=pos.y, z=pos.z-1},
+	}) do
+		if minetest.find_nodes_in_area(p, p, {"group:water"})[1] then
+			return false
+		end
+	end
+	return true
+end
+
+
 -- Encontrar tocha acessa no inventario
 hardtorch.find_inv = function(player, itemname)
 	local inv = player:get_inventory()
@@ -189,6 +207,12 @@ minetest.register_tool("hardtorch:torch_tool", {
 			if pointed_thing.type ~= "node" then
 				return itemstack
 			end
+			
+			-- Verifica se tem algum impedimento no local
+			if hardtorch.check_torch_area(pointed_thing.above) == false then
+				return itemstack
+			end
+			
 		
 			local under = pointed_thing.under
 			local above = pointed_thing.above
@@ -249,7 +273,12 @@ minetest.register_tool("hardtorch:torch_tool_on", {
 		if pointed_thing.type ~= "node" then
 			return itemstack
 		end
-	
+		
+		-- Verifica se tem algum impedimento no local
+		if hardtorch.check_torch_area(pointed_thing.above) == false then
+			return itemstack
+		end
+		
 		local under = pointed_thing.under
 		local above = pointed_thing.above
 		local wdir = minetest.dir_to_wallmounted(vector.subtract(under, above))
