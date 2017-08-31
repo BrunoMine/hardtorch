@@ -20,9 +20,11 @@ hardtorch.em_loop = {}
 
 -- Tempo de permanencia da tocha acessa (em segundos)
 local velocidade_tempo = tonumber(minetest.setting_get("time_speed") or 72)
-hardtorch.tempo_tocha = ((math.abs(tonumber(minetest.setting_get("hardtorch_torch_nights") or 1)))*12)/velocidade_tempo
+local torch_nights = math.abs(tonumber(minetest.setting_get("hardtorch_torch_nights") or 1)) -- Noites de durabilidade da tocha
+if torch_nights < 0.1 then torch_nights = 1 end
+hardtorch.tempo_tocha = (torch_nights*(12*60*60))/velocidade_tempo
 -- Tempo fixo (sobreescreve caso definido)
-if tonumber(minetest.setting_get("hardtorch_torch_time") or 0) > 0 then
+if tonumber(minetest.setting_get("hardtorch_torch_time") or 0) > 10 then
 	hardtorch.tempo_tocha = tonumber(minetest.setting_get("hardtorch_torch_time") or hardtorch.tempo_tocha)
 end
 

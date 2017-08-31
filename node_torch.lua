@@ -23,8 +23,18 @@ local on_dig = function(pos, node, digger)
 	
 	-- Verifica se cabe no inventario
 	if inv:room_for_item("main", itemstack) then
+	
+		if not hardtorch.em_loop[digger:get_player_name()] then
+			itemstack.name="hardtorch:torch_tool_on"
+		end
+		
 		-- Coloca no inventario acessa
-		inv:add_item("main", itemstack)
+		itemstack = inv:add_item("main", itemstack)
+		-- Adiciona a tocha acessa caso o jogador ainda nao tenha uma
+		if not hardtorch.em_loop[digger:get_player_name()] then
+			itemstack = hardtorch.acender_tocha(itemstack, digger)
+			local list, i, itemstack = find_inv(digger, "hardtorch:torch_tool_on")
+		end
 	else
 		-- Dropa no local
 		minetest.add_item(pos, itemstack)
@@ -61,14 +71,31 @@ end
 -- Adiciona uso para tochas substituindo por tocha ferramenta (que será acessa)
 local on_use = function(itemstack, player, pointed_thing)
 	local sobra = itemstack:get_count() - 1
+	local inv = player:get_inventory()
+	
+	-- Localiza o item no iventario
+	local list, i = player:get_wield_list(), player:get_wield_index()
+	local itemstack2 = inv:get_stack(list, i)
+	if itemstack:to_string() ~= itemstack2:to_string() then
+		return
+	end
 	
 	-- Troca o item por uma tocha acessa
 	itemstack:replace({name="hardtorch:torch_tool_on", count=1, wear=0, metadata=""})
-	player:set_wielded_item(itemstack)
+	inv:set_stack(list, i, itemstack)
 	
 	-- Caso tenha sobra tenta colocar no inventario, ou joga no chão (com aviso sonoro e textual)
 	if sobra > 0 then
-		repor_sobra(minetest.serialize(player:getpos()), player, sobra)
+		if inv:room_for_item("main", "default:torch "..sobra) then
+			-- Coloca no inventario
+			inv:add_item("main", "default:torch "..sobra)
+		else
+			-- Coloca a tocha no inventario para poder dropa-la
+			inv:set_stack(list, i, "default:torch "..sobra)
+			minetest.item_drop(inv:get_stack(list, i), player, player:getpos())
+			-- Recoloca tocha
+			inv:set_stack(list, i, itemstack)
+		end
 	end
 	
 	return hardtorch.acender_tocha(itemstack, player)
@@ -89,18 +116,26 @@ local after_place_node = function(pos, placer, itemstack, pointed_thing)
 	
 end
 
-
 -- Remove tocha quando fogo acabar
 local on_timer = function(pos, elapsed)
 	-- remove bloco
 	minetest.remove_node(pos)
 end
 
+local node_torch_def = {
+	inventory_image = "hardtorch_torch_tool_off.png",
+	wield_image = "hardtorch_torch_tool_off.png",
+	drop="", 
+	on_dig=on_dig, 
+	on_use=on_use, 
+	after_place_node=after_place_node, 
+	on_timer=on_timer,
+}
 
 -- Atualiza tochas com novas funcões de chamadas
-minetest.override_item("default:torch", {drop="", on_dig=on_dig, on_use=on_use, after_place_node=after_place_node, on_timer=on_timer})
-minetest.override_item("default:torch_ceiling", {drop="", on_dig=on_dig, on_use=on_use, after_place_node=after_place_node, on_timer=on_timer})
-minetest.override_item("default:torch_wall", {drop="", on_dig=on_dig, on_use=on_use, after_place_node=after_place_node, on_timer=on_timer})
+minetest.override_item("default:torch", node_torch_def)
+minetest.override_item("default:torch_ceiling", node_torch_def)
+minetest.override_item("default:torch_wall", node_torch_def)
 
 
 -- Inicia desgaste em tochas antigas
