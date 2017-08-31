@@ -10,6 +10,15 @@
 	
   ]]
 
+-- Tocar som de extinção da chama
+hardtorch.som_ext_chama = function(pos)
+	minetest.sound_play("hardtorch_apagando_tocha", {
+		pos = pos,
+		max_hear_distance = 7,
+		gain = 0.2,
+	})
+end
+som_ext_chama = hardtorch.som_ext_chama
 
 -- Encontrar tocha acessa no inventario
 hardtorch.find_inv = function(player, itemname)
@@ -217,6 +226,7 @@ minetest.register_tool("hardtorch:torch_tool_on", {
 	
 	on_use = function(itemstack, user, pointed_thing)
 		-- Remover luz
+		som_ext_chama(user:getpos())
 		hardtorch.apagar_node_luz(user:get_player_name())
 		remover_hud(user)
 		itemstack:set_name("hardtorch:torch_tool")
