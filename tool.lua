@@ -12,13 +12,13 @@
 
 
 -- Encontrar tocha acessa no inventario
-local find_torch_inv = function(player)
+local find_inv = function(player, itemname)
 	local inv = player:get_inventory()
 	-- Verifica cada um dos itens
 	for list_name,list in pairs(inv:get_lists()) do
 		for i,item in ipairs(list) do
 			-- Troca pela tocha apagada
-			if item:get_name() == "hardtorch:torch_tool_on" then
+			if item:get_name() == itemname then
 				return list_name, i, item
 			end
 		end
@@ -71,12 +71,24 @@ hardtorch.loop_tocha = function(name)
 	if not player then return end
 	
 	-- Verifica tocha
-	local list, i, itemstack = find_torch_inv(player)
+	local list, i, itemstack = find_inv(player, "hardtorch:torch_tool_on")
 	if not itemstack then
 		-- Encerra loop
 		hardtorch.apagar_tocha(player)
 		hardtorch.em_loop[name] = nil
 		return
+	end
+	
+	-- Verifica se tem lugar para a luz
+	do 
+		local nn = minetest.get_node(hardtorch.get_lpos(player)).name
+		if nn ~= "air" and nn ~= "hardtorch:luz" then
+			-- Encerra loop
+			hardtorch.apagar_tocha(player)
+			hardtorch.em_loop[name] = nil
+			return
+		end 
+		
 	end
 	-- Adiciona desgaste
 	itemstack:add_wear(desgaste_loop)
@@ -131,6 +143,21 @@ minetest.register_tool("hardtorch:torch_tool", {
 	groups = {not_in_creative_inventory = 1},
 	
 	on_use = function(itemstack, user, pointed_thing)
+		-- Verifica se tem fonte de fogo
+		if hardtorch.torch_lighter then
+			if pointed_thing.under and hardtorch.fontes_de_fogo[minetest.get_node(pointed_thing.under).name] then
+				return hardtorch.acender_tocha(itemstack, user)
+			end
+			for tool,wear in pairs(hardtorch.acendedores) do
+				if find_inv(user, tool) then
+					local list, i, item = find_inv(user, tool)
+					item:add_wear(wear)
+					user:get_inventory():set_stack(list, i, item)
+					return hardtorch.acender_tocha(itemstack, user)
+				end
+			end
+			return itemstack
+		end
 		return hardtorch.acender_tocha(itemstack, user)
 	end,
 	

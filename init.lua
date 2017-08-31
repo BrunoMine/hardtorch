@@ -19,7 +19,31 @@ hardtorch.em_loop = {}
 
 
 -- Tempo de permanencia da tocha acessa (em segundos)
-hardtorch.tempo_tocha = tonumber(minetest.setting_get("hardtorch_tempo_tocha") or 300)
+local velocidade_tempo = tonumber(minetest.setting_get("time_speed") or 72)
+hardtorch.tempo_tocha = ((math.abs(tonumber(minetest.setting_get("hardtorch_torch_nights") or 1)))*12)/velocidade_tempo
+-- Tempo fixo (sobreescreve caso definido)
+if tonumber(minetest.setting_get("hardtorch_torch_time") or 0) > 0 then
+	hardtorch.tempo_tocha = tonumber(minetest.setting_get("hardtorch_torch_time") or hardtorch.tempo_tocha)
+end
+
+-- Requerer fonte de fogo para acender tocha
+hardtorch.torch_lighter = minetest.setting_getbool("hardtorch_torch_lighter") or false
+
+hardtorch.fontes_de_fogo = {
+	["default:furnace_active"] = true,
+	["default:lava_flowing"] = true,
+	["default:lava_source"] = true,
+	["fire:basic_flame"] = true,
+	["fire:permanent_flame"] = true,
+	["default:torch"] = true,
+	["default:torch_ceiling"] = true,
+	["default:torch_wall"] = true,
+}
+
+hardtorch.acendedores = {
+	["fire:flint_and_steel"] = 1000,
+}
+
 
 
 -- Notificador de Inicializador
