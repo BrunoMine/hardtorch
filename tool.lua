@@ -6,73 +6,46 @@
 	Public License junto com esse software,
 	se não, veja em <http://www.gnu.org/licenses/>. 
 	
-	Ferramenta para desgaste
+	Ferramentas
 	
   ]]
 
--- Tocar som de extinção da chama
-hardtorch.som_ext_chama = function(pos)
-	minetest.sound_play("hardtorch_apagando_tocha", {
-		pos = pos,
-		max_hear_distance = 7,
-		gain = 0.2,
-	})
-end
-som_ext_chama = hardtorch.som_ext_chama
 
--- Verificar impedimento no local proximo da tocha
-hardtorch.check_torch_area = function(pos)
-	for _,p in ipairs({
-		{x=pos.x+1, y=pos.y, z=pos.z},
-		{x=pos.x, y=pos.y+1, z=pos.z},
-		{x=pos.x, y=pos.y, z=pos.z+1},
-		{x=pos.x-1, y=pos.y, z=pos.z},
-		{x=pos.x, y=pos.y-1, z=pos.z},
-		{x=pos.x, y=pos.y, z=pos.z-1},
-	}) do
-		if minetest.find_nodes_in_area(p, p, {"group:water"})[1] then
-			return false
-		end
-	end
-	return true
-end
-
-
--- Encontrar tocha acessa no inventario
-hardtorch.find_inv = function(player, itemname)
-	local inv = player:get_inventory()
-	-- Verifica cada um dos itens
-	for list_name,list in pairs(inv:get_lists()) do
-		for i,item in ipairs(list) do
-			-- Troca pela tocha apagada
-			if item:get_name() == itemname then
-				return list_name, i, item
-			end
-		end
-	end
-end
-find_inv = hardtorch.find_inv
-
--- Remover luz do hud
-local remover_hud = function(player)
+-- Acender tocha
+hardtorch.acender_tocha = function(itemstack, player)
 	local name = player:get_player_name()
-	if hardtorch.em_loop[name] and hardtorch.em_loop[name].hud_id then
-		player:hud_remove(hardtorch.em_loop[name].hud_id)
+	local torchname = itemstack:get_name()
+	itemstack:set_name(torchname.."_on")
+	itemstack:add_wear(100)
+	
+	-- Verifica se ja esta acessa (evitar loop duplo)
+	if not hardtorch.em_loop[name] then 
+		hardtorch.em_loop[name] = {lpos=hardtorch.get_lpos(player)}
+		-- Adiciona luz no hud
+		hardtorch.adicionar_luz_hud(player, torchname)
+		-- Inicia loop de tocha (atraso para dar tempo de atualizar item no inventario)
+		minetest.after(0.3, hardtorch.loop_tocha, name, torchname)
+		-- Inicia loop de luz
+		hardtorch.loop_luz(name, torchname)
+		-- Som
+		hardtorch.som_acender(player:getpos(), torchname)
 	end
+	
+	return itemstack
 end
 
 
 -- Apaga todas as tochas que um jogador possui
-hardtorch.apagar_tocha = function(player)
+hardtorch.apagar_tocha = function(player, torchname)
 	-- Remover luz do hud
-	remover_hud(player)
+	hardtorch.remover_luz_hud(player)
 	local inv = player:get_inventory()
 	-- Verifica cada um dos itens
 	for _,list in pairs(inv:get_lists()) do
 		for i,item in ipairs(list) do
 			-- Troca pela tocha apagada
-			if item:get_name() == "hardtorch:torch_tool_on" then
-				item:set_name("hardtorch:torch_tool")
+			if item:get_name() == torchname.."_on" then
+				item:set_name(torchname)
 				inv:set_stack("main", i, item)
 			end
 		end
@@ -80,25 +53,8 @@ hardtorch.apagar_tocha = function(player)
 end
 
 
--- Elemento HUD luz
-local hud_element = {
-	hud_elem_type = "image",
-	position = {x=0.1, y=1.1},
-	name = "<name>",
-	scale = {x=4, y=4},
-	text = "hardtorch_luz.png",
-	number = 2,
-	item = 3,
-	direction = 0,
-	alignment = {x=0, y=0},
-	offset = {x=0, y=0},
-	size = { x=100, y=100 },
-}
-
-
 -- Inicia loop de verificação apos acender tocha
-local desgaste_loop = (65535/hardtorch.tempo_tocha)*2
-hardtorch.loop_tocha = function(name)
+hardtorch.loop_tocha = function(name, torchname)
 	-- Verifica se ja iniciou loop
 	if not hardtorch.em_loop[name] then return end
 	-- Verifica jogador
@@ -106,10 +62,10 @@ hardtorch.loop_tocha = function(name)
 	if not player then return end
 	
 	-- Verifica tocha
-	local list, i, itemstack = find_inv(player, "hardtorch:torch_tool_on")
+	local list, i, itemstack = hardtorch.find_and_get_item(player, torchname.."_on")
 	if not itemstack then
 		-- Encerra loop
-		hardtorch.apagar_tocha(player)
+		hardtorch.apagar_tocha(player, torchname)
 		hardtorch.em_loop[name] = nil
 		return
 	end
@@ -117,216 +73,191 @@ hardtorch.loop_tocha = function(name)
 	-- Verifica se tem lugar para a luz
 	do 
 		local nn = minetest.get_node(hardtorch.get_lpos(player)).name
-		if nn ~= "air" and nn ~= "hardtorch:luz" then
+		if nn ~= "air" and not string.match(nn, "hardtorch:luz_") then
 			-- Encerra loop
-			hardtorch.apagar_tocha(player)
+			hardtorch.apagar_tocha(player, torchname)
 			hardtorch.em_loop[name] = nil
 			return
 		end 
 		
 	end
+	
+	
 	-- Adiciona desgaste
-	itemstack:add_wear(desgaste_loop)
+	itemstack:add_wear(hardtorch.registered_torchs[torchname].loop_wear)
 	player:get_inventory():set_stack(list, i, itemstack)
+	
 	
 	-- Verifica se acabou a tocha
 	if itemstack:is_empty() then
 		-- Encerra loop
-		hardtorch.apagar_tocha(player)
+		hardtorch.apagar_tocha(player, torchname)
 		hardtorch.em_loop[name] = nil
 		return
 	end
+	
 	
 	-- Verifica se luz do hud foi criada
 	if not hardtorch.em_loop[name].hud_id 
 		or not player:hud_get(hardtorch.em_loop[name].hud_id)
 	then
-		hardtorch.em_loop[name].hud_id = player:hud_add(hud_element)
+		hardtorch.adicionar_luz_hud(player, torchname)
 	end
 	
 	
 	-- Prepara para proximo loop
-	minetest.after(2, hardtorch.loop_tocha, name)
+	minetest.after(2, hardtorch.loop_tocha, name, torchname)
 end
 
 
--- Acender tocha
-hardtorch.acender_tocha = function(itemstack, player)
-	local name = player:get_player_name()
-	itemstack:set_name("hardtorch:torch_tool_on")
-	itemstack:add_wear(100)
+-- Registra as ferramentas
+hardtorch.register_tool = function(torchname, def)
 	
-	-- Verifica se ja esta acessa (evitar loop duplo)
-	if not hardtorch.em_loop[name] then 
-		hardtorch.em_loop[name] = {lpos=hardtorch.get_lpos(player)}
-		-- Adiciona luz no hud
-		hardtorch.em_loop[name].hud_id = player:hud_add(hud_element)
-		-- Inicia loop de tocha (atraso para dar tempo de atualizar item no inventario)
-		minetest.after(0.3, hardtorch.loop_tocha, name)
-		-- Inicia loop de luz
-		hardtorch.loop_luz(name)
-	end
+	-- Ferramenta de tocha para desgaste
+	minetest.register_tool(":"..torchname, {
+		description = def.description,
+		inventory_image = def.inventory_image.off,
+		wield_image = def.wield_image,
+		groups = {not_in_creative_inventory = 1},
 	
-	return itemstack
-end
-
-
--- Ferramenta de tocha para desgaste
-minetest.register_tool("hardtorch:torch_tool", {
-	description = "Tocha (usada)",
-	inventory_image = "hardtorch_torch_tool_off.png",
-	groups = {not_in_creative_inventory = 1},
-	
-	on_use = function(itemstack, user, pointed_thing)
-		-- Verifica se ja tem uma tocha acessa
-		if hardtorch.find_inv(user, "hardtorch:torch_tool_on") then
-			return
-		end
-		
-		-- Verifica se tem fonte de fogo
-		if hardtorch.torch_lighter then
-			if pointed_thing.under and hardtorch.fontes_de_fogo[minetest.get_node(pointed_thing.under).name] then
-				return hardtorch.acender_tocha(itemstack, user)
+		on_use = function(itemstack, user, pointed_thing)
+			-- Verifica se ja tem uma tocha acessa
+			if hardtorch.find_item(user, torchname.."_on") then
+				return
 			end
-			for tool,wear in pairs(hardtorch.acendedores) do
-				if find_inv(user, tool) then
-					local list, i, item = find_inv(user, tool)
-					item:add_wear(wear)
-					user:get_inventory():set_stack(list, i, item)
+		
+			-- Verifica se tem fonte de fogo
+			if hardtorch.torch_lighter then
+				
+				if pointed_thing.under and hardtorch.fontes_de_fogo[minetest.get_node(pointed_thing.under).name] 
+					or pointed_thing.above and hardtorch.fontes_de_fogo[minetest.get_node(pointed_thing.above).name] 
+				then
 					return hardtorch.acender_tocha(itemstack, user)
 				end
+				for tool,wear in pairs(hardtorch.acendedores) do
+					if hardtorch.find_item(user, tool) then
+						local list, i, item = hardtorch.find_and_get_item(user, tool)
+						item:add_wear(wear)
+						user:get_inventory():set_stack(list, i, item)
+						return hardtorch.acender_tocha(itemstack, user)
+					end
+				end
+				return itemstack
 			end
-			return itemstack
-		end
-		return hardtorch.acender_tocha(itemstack, user)
-	end,
+			return hardtorch.acender_tocha(itemstack, user)
+		end,
 	
-	-- Ao colocar funciona como tocha normal apenas repassando o desgaste
-	on_place = function(itemstack, placer, pointed_thing)
-		if hardtorch.torch_lighter == false then
+		-- Ao colocar funciona como tocha normal apenas repassando o desgaste
+		on_place = function(itemstack, placer, pointed_thing)
+			if hardtorch.torch_lighter == false then
+				if pointed_thing.type ~= "node" then
+					return itemstack
+				end
+			
+				-- Verifica se tem algum impedimento no local
+				if hardtorch.check_torch_area(pointed_thing.above) == false then
+					return itemstack
+				end
+			
+		
+				local under = pointed_thing.under
+				local above = pointed_thing.above
+				local wdir = minetest.dir_to_wallmounted(vector.subtract(under, above))
+				local wear = itemstack:get_wear()
+		
+				if wdir == 0 then
+					itemstack:set_name(def.nodes.node_ceiling or def.nodes.node)
+				elseif wdir == 1 then
+					itemstack:set_name(def.nodes.node)
+				else
+					itemstack:set_name(def.nodes.node_wall or def.nodes.node)
+				end
+		
+				itemstack = minetest.item_place(itemstack, placer, pointed_thing, wdir)
+			
+				-- Repassa desgaste
+				local meta = minetest.get_meta(pointed_thing.above)
+				meta:set_int("wear", wear)
+		
+				-- Remove item do inventario
+				itemstack:take_item()
+		
+				return itemstack
+			end
+		end,
+	})
+
+	-- Versao acessa da ferramenta
+	minetest.register_tool(":"..torchname.."_on", {
+		description = def.description,
+		inventory_image = def.inventory_image.on,
+		wield_image = "hardtorch_torch_tool_on_mao.png",
+		groups = {not_in_creative_inventory = 1},
+	
+		on_use = function(itemstack, user, pointed_thing)
+			-- Remover luz
+			hardtorch.som_apagar(user:getpos(), torchname)
+			hardtorch.apagar_node_luz(user:get_player_name())
+			hardtorch.remover_luz_hud(user)
+			itemstack:set_name(torchname)
+			return itemstack
+		end,
+	
+		on_drop = function(itemstack, dropper, pos)
+			-- Remover luz
+			hardtorch.apagar_node_luz(dropper:get_player_name())
+			hardtorch.remover_luz_hud(dropper)
+			itemstack:set_name(torchname)
+			minetest.item_drop(itemstack, dropper, pos)
+			itemstack:clear()
+		
+			return itemstack
+		end,
+	
+		-- Ao colocar funciona como tocha normal apenas repassando o desgaste
+		on_place = function(itemstack, placer, pointed_thing)
 			if pointed_thing.type ~= "node" then
 				return itemstack
 			end
-			
+		
 			-- Verifica se tem algum impedimento no local
 			if hardtorch.check_torch_area(pointed_thing.above) == false then
 				return itemstack
 			end
-			
 		
 			local under = pointed_thing.under
 			local above = pointed_thing.above
 			local wdir = minetest.dir_to_wallmounted(vector.subtract(under, above))
 			local wear = itemstack:get_wear()
-		
+	
 			if wdir == 0 then
-				itemstack:set_name("default:torch_ceiling")
+				itemstack:set_name(def.nodes.node_ceiling or def.nodes.node)
 			elseif wdir == 1 then
-				itemstack:set_name("default:torch")
+				itemstack:set_name(def.nodes.node)
 			else
-				itemstack:set_name("default:torch_wall")
+				itemstack:set_name(def.nodes.node_wall or def.nodes.node)
+			end
+	
+			itemstack = minetest.item_place(itemstack, placer, pointed_thing, wdir)
+		
+			if not itemstack then
+				return
 			end
 		
-			itemstack = minetest.item_place(itemstack, placer, pointed_thing, wdir)
-			
 			-- Repassa desgaste
 			local meta = minetest.get_meta(pointed_thing.above)
 			meta:set_int("wear", wear)
-		
+	
 			-- Remove item do inventario
 			itemstack:take_item()
 		
+			-- Remover luz
+			hardtorch.apagar_node_luz(placer:get_player_name())
+			hardtorch.remover_luz_hud(placer)
+		
 			return itemstack
-		end
-	end,
-})
-
--- Versao acessa
-minetest.register_tool("hardtorch:torch_tool_on", {
-	description = "Tocha (usada)",
-	inventory_image = "hardtorch_torch_tool_on.png",
-	wield_image = "hardtorch_torch_tool_on_mao.png",
-	groups = {not_in_creative_inventory = 1},
+		end,
+	})
 	
-	on_use = function(itemstack, user, pointed_thing)
-		-- Remover luz
-		som_ext_chama(user:getpos())
-		hardtorch.apagar_node_luz(user:get_player_name())
-		remover_hud(user)
-		itemstack:set_name("hardtorch:torch_tool")
-		return itemstack
-	end,
-	
-	on_drop = function(itemstack, dropper, pos)
-		-- Remover luz
-		hardtorch.apagar_node_luz(dropper:get_player_name())
-		remover_hud(dropper)
-		itemstack:set_name("hardtorch:torch_tool")
-		minetest.item_drop(itemstack, dropper, pos)
-		itemstack:clear()
-		
-		return itemstack
-	end,
-	
-	-- Ao colocar funciona como tocha normal apenas repassando o desgaste
-	on_place = function(itemstack, placer, pointed_thing)
-		if pointed_thing.type ~= "node" then
-			return itemstack
-		end
-		
-		-- Verifica se tem algum impedimento no local
-		if hardtorch.check_torch_area(pointed_thing.above) == false then
-			return itemstack
-		end
-		
-		local under = pointed_thing.under
-		local above = pointed_thing.above
-		local wdir = minetest.dir_to_wallmounted(vector.subtract(under, above))
-		local wear = itemstack:get_wear()
-	
-		if wdir == 0 then
-			itemstack:set_name("default:torch_ceiling")
-		elseif wdir == 1 then
-			itemstack:set_name("default:torch")
-		else
-			itemstack:set_name("default:torch_wall")
-		end
-	
-		itemstack = minetest.item_place(itemstack, placer, pointed_thing, wdir)
-		
-		if not itemstack then
-			return
-		end
-		
-		-- Repassa desgaste
-		local meta = minetest.get_meta(pointed_thing.above)
-		meta:set_int("wear", wear)
-	
-		-- Remove item do inventario
-		itemstack:take_item()
-		
-		-- Remover luz
-		hardtorch.apagar_node_luz(placer:get_player_name())
-		remover_hud(placer)
-		
-		return itemstack
-	end,
-	
-})
-
-
-
--- Certifica que jogador que acabou de entrar esteja com tocha acessa, caso contrario apaga ela
-minetest.register_on_joinplayer(function(player)
-	local inv = player:get_inventory()
-	
-	-- Verifica se tem tocha acessa
-	if inv:contains_item("main", "hardtorch:torch_tool_on") 
-		or inv:contains_item("craft", "hardtorch:torch_tool_on") 
-	then 
-		hardtorch.apagar_tocha(player)
-	end
-	
-	
-end)
+end
 

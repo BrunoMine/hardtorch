@@ -12,11 +12,4 @@ hardtorch_torch_nights (Durabilidade da Tocha em noites) float 1
 hardtorch_torch_lighter (Acendedor de Tocha) bool false
 
 
-# Tempo fixo (em segundos) que uma tocha perdura acessa.
-# Esse tempo sobrepoe outras medidas de durabilidade da tocha.
-# Manter 0 para desativar o tempo fixo.
-# (Precisao de 2 segundos)
-hardtorch_torch_time (Durabilidade da Tocha em segundos) float 0
-
-
 

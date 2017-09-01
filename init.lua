@@ -17,17 +17,6 @@ hardtorch = {}
 -- Tabela de jogadores em loop de tocha acessa
 hardtorch.em_loop = {}
 
-
--- Tempo de permanencia da tocha acessa (em segundos)
-local velocidade_tempo = tonumber(minetest.setting_get("time_speed") or 72)
-local torch_nights = math.abs(tonumber(minetest.setting_get("hardtorch_torch_nights") or 1)) -- Noites de durabilidade da tocha
-if torch_nights < 0.1 then torch_nights = 1 end
-hardtorch.tempo_tocha = (torch_nights*(12*60*60))/velocidade_tempo
--- Tempo fixo (sobreescreve caso definido)
-if tonumber(minetest.setting_get("hardtorch_torch_time") or 0) > 10 then
-	hardtorch.tempo_tocha = tonumber(minetest.setting_get("hardtorch_torch_time") or hardtorch.tempo_tocha)
-end
-
 -- Requerer fonte de fogo para acender tocha
 hardtorch.torch_lighter = minetest.setting_getbool("hardtorch_torch_lighter") or false
 
@@ -46,6 +35,7 @@ hardtorch.acendedores = {
 	["fire:flint_and_steel"] = 1000,
 }
 
+hardtorch.registered_torchs = {}
 
 
 -- Notificador de Inicializador
@@ -62,7 +52,10 @@ local modpath = minetest.get_modpath("hardtorch")
 -- Carregar scripts
 notificar("Carregando...")
 -- Metodos gerais
+dofile(modpath.."/comum.lua")
 dofile(modpath.."/luz.lua")
 dofile(modpath.."/tool.lua")
-dofile(modpath.."/node_torch.lua")
+dofile(modpath.."/node.lua")
+dofile(modpath.."/api.lua")
+dofile(modpath.."/torch.lua")
 notificar("[OK]!")
