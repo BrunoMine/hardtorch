@@ -162,57 +162,36 @@ hardtorch.register_tool = function(torchname, def)
 
 		-- Ao colocar funciona como tocha normal apenas repassando o desgaste
 		on_place = function(itemstack, placer, pointed_thing)
-			if hardtorch.torch_lighter == false then
-				if pointed_thing.type ~= "node" then
-					return itemstack
-				end
-		
-				-- Verifica se tem algum impedimento no local
-				if hardtorch.check_torch_area(pointed_thing.above) == false then
-					return itemstack
-				end
-	
-				local under = pointed_thing.under
-				local above = pointed_thing.above
-				local wdir = minetest.dir_to_wallmounted(vector.subtract(under, above))
-				local wear = itemstack:get_wear()
-	
-				if wdir == 0 then
-					itemstack:set_name(def.nodes.node_ceiling or def.nodes.node)
-				elseif wdir == 1 then
-					itemstack:set_name(def.nodes.node)
-				else
-					itemstack:set_name(def.nodes.node_wall or def.nodes.node)
-				end
-	
-				itemstack = minetest.item_place(itemstack, placer, pointed_thing, wdir)
-		
-				-- Repassa desgaste de combustivel
-				local fuelname, fuelwear
-				local loop = hardtorch.em_loop[placer:get_player_name()]
-				local inv = placer:get_inventory()
-				if loop and loop.fuel and inv:get_stack(loop.fuel.list, loop.fuel.i):get_name() == loop.fuel.name then
-					fuelname = loop.fuel.name
-					fuelwear = inv:get_stack(loop.fuel.list, loop.fuel.i):get_wear()
-					if inv:get_stack(loop.fuel.list, loop.fuel.i):get_name() ~= itemstack:get_name() then
-						local fuelstack = inv:get_stack(loop.fuel.list, loop.fuel.i)
-						inv:remove_item(loop.fuel.list, fuelstack)
-					end
-				else
-					fuelname, fuelwear = def.fuel[1], 65000 -- perto do fim
-				end
-				
-				local meta = minetest.get_meta(pointed_thing.above)
-				meta:set_string("hardtorch_fuel", fuelname)
-				meta:set_int("hardtorch_wear", fuelwear)
-				minetest.get_node_timer(pointed_thing.above):start(hardtorch.get_node_timeout(pointed_thing.above))
-	
-				-- Remove item do inventario
-				itemstack:take_item()
-	
+			
+			if pointed_thing.type ~= "node" then
 				return itemstack
 			end
+			
+			-- Verifica se tem algum impedimento no local
+			if hardtorch.check_torch_area(pointed_thing.above) == false then
+				return itemstack
+			end
+			
+			-- Verificar se é um node
+			if not minetest.registered_nodes[torchname] then
+				return itemstack
+			end
+			
+			-- Coloca node apagado
+			if hardtorch.registered_torchs[torchname].nodes_off then
+				itemstack:set_name(hardtorch.registered_torchs[torchname].nodes_off.node)
+			end
+			if not minetest.item_place(itemstack, placer, pointed_thing) then
+				return itemstack
+			end
+			
+			-- Remove item do inventario
+			itemstack:take_item()
+
+			return itemstack
+			
 		end,
+		
 	})
 	
 	-- Versao acessa
@@ -278,7 +257,8 @@ hardtorch.register_tool = function(torchname, def)
 				fuelwear = inv:get_stack(loop.fuel.list, loop.fuel.i):get_wear()
 				if inv:get_stack(loop.fuel.list, loop.fuel.i):get_name() ~= itemstack:get_name() then
 					local fuelstack = inv:get_stack(loop.fuel.list, loop.fuel.i)
-					inv:remove_item(loop.fuel.list, fuelstack)
+					fuelstack:take_item()
+					hardtorch.update_inv(placer, loop.fuel.list, loop.fuel.i, fuelstack)
 				end
 			else 
 				fuelname, fuelwear = def.fuel[1], 65000 -- perto do fim

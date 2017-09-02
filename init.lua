@@ -26,9 +26,6 @@ hardtorch.fontes_de_fogo = {
 	["default:lava_source"] = true,
 	["fire:basic_flame"] = true,
 	["fire:permanent_flame"] = true,
-	["default:torch"] = true,
-	["default:torch_ceiling"] = true,
-	["default:torch_wall"] = true,
 }
 
 hardtorch.acendedores = {
@@ -60,5 +57,6 @@ dofile(modpath.."/tool.lua")
 dofile(modpath.."/node.lua")
 dofile(modpath.."/api.lua")
 dofile(modpath.."/torch.lua")
+dofile(modpath.."/oil.lua")
 dofile(modpath.."/lamp.lua")
 notificar("[OK]!")

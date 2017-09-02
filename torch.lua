@@ -19,23 +19,16 @@ hardtorch.register_fuel("hardtorch:torch_on", {
 	turns = 0.1,--torch_nights
 })
 
--- Ajuste na tocha padrão
-minetest.override_item("default:torch", {
-	inventory_image = "hardtorch_torch_tool_off.png",
-	wield_image = "hardtorch_torch_tool_off.png",
-})
-
 -- Registrar ferramentas
 minetest.register_tool("hardtorch:torch", {
-	description = "Torch (used)",
+	description = "Torch",
 	inventory_image = "hardtorch_torch_tool_off.png",
 	wield_image = "hardtorch_torch_tool_off.png",
-	groups = {not_in_creative_inventory = 1},
 })
 
 -- Versao acessa da ferramenta
 minetest.register_tool("hardtorch:torch_on", {
-	description = "Torch (using)",
+	description = "Torch Lit",
 	inventory_image = "hardtorch_torch_tool_on.png",
 	wield_image = "hardtorch_torch_tool_on_mao.png",
 	groups = {not_in_creative_inventory = 1},
@@ -44,7 +37,7 @@ minetest.register_tool("hardtorch:torch_on", {
 -- Registrar tocha
 hardtorch.register_torch("hardtorch:torch", {
 	night_turns = torch_nights,
-	light_source = 11,
+	light_source = 10,
 	fuel = {"hardtorch:torch_on"},
 	nodes = {
 		node = "default:torch", 
@@ -74,4 +67,23 @@ minetest.register_lbm({
 		-- Inicia contagem para acabar fogo de acordo com desgaste definido
 		minetest.get_node_timer(pos):start(hardtorch.get_node_timeout(pos))
 	end,
+})
+
+-- Ajuste na tocha padrão
+do
+	-- Remove receita de nodes de tochas
+	minetest.clear_craft({output = 'default:torch'})
+	minetest.registered_nodes["default:torch"].groups.not_in_creative_inventory = 1
+	minetest.override_item("default:torch", {
+		groups = minetest.registered_nodes["default:torch"].groups
+	})
+end
+
+-- Receita da Tocha
+minetest.register_craft({
+	output = 'hardtorch:torch',
+	recipe = {
+		{'default:coal_lump'},
+		{'group:stick'},
+	}
 })

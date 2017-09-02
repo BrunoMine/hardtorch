@@ -18,6 +18,7 @@ hardtorch.register_node = function(torchname, def)
 	
 	for nt,nn in pairs(def.nodes) do
 		hardtorch.registered_nodes[nn] = torchname
+		hardtorch.fontes_de_fogo[nn] = true
 	end
 	
 	-- Recuperar o desgaste apos coletado
@@ -78,7 +79,7 @@ hardtorch.register_node = function(torchname, def)
 
 	
 	-- Adiciona uso para node de tochas ser substituindo por ferramenta de tocha (que será acessa)
-	on_use = function(itemstack, player, pointed_thing)
+	local on_use = function(itemstack, player, pointed_thing)
 		local sobra = itemstack:get_count() - 1
 		local inv = player:get_inventory()
 		
@@ -124,8 +125,6 @@ hardtorch.register_node = function(torchname, def)
 			if meta:get_string("hardtorch_fuel") == "" then
 				meta:set_string("hardtorch_fuel", def.fuel[1])
 				meta:set_int("hardtorch_wear", 0)
-			else
-				minetest.chat_send_all("tocha colocada tem realmente wear = "..meta:get_int("hardtorch_wear"))
 			end
 		
 			-- Inicia contagem para acabar fogo de acordo com desgaste definido

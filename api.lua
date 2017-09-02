@@ -31,10 +31,6 @@ hardtorch.register_torch = function(name, def)
 	-- Consolidar dados
 	hardtorch.registered_torchs[name].sounds = def.sounds or {}
 	
-	-- Tempo de durabilidade em segundos
-	hardtorch.registered_torchs[name].torch_time = (def.night_turns*(12*60*60))/tonumber(minetest.setting_get("time_speed") or 72)
-	hardtorch.registered_torchs[name].loop_wear = (65535/hardtorch.registered_torchs[name].torch_time)*2
-	
 	-- Cria as ferramentas
 	hardtorch.register_tool(name, def)
 	

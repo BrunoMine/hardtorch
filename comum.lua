@@ -71,6 +71,16 @@ hardtorch.get_node_wear = function(pos)
 end
 
 
+-- Atualizar um itemstack no inventario do jogador 
+-- (metodo padrão set_stack() não consegue atualizar com stack vazio)
+hardtorch.update_inv = function(player, list, i, stack)
+	local inv = player:get_inventory()
+	local itemlist = inv:get_list(list)
+	itemlist[i] = stack or "empty"
+	inv:set_list(list, itemlist)
+end
+
+
 -- Verificar impedimento no local proximo da tocha
 hardtorch.check_torch_area = function(pos)
 	for _,p in ipairs({
