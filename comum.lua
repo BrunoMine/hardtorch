@@ -11,6 +11,18 @@
   ]]
 
 
+-- Tocar som de acender tocha
+hardtorch.som_acender = function(pos, torchname)
+	if hardtorch.registered_torchs[torchname].sounds.turn_on then
+		minetest.sound_play(hardtorch.registered_torchs[torchname].sounds.turn_on.name, {
+			pos = pos,
+			max_hear_distance = 7,
+			gain = hardtorch.registered_torchs[torchname].sounds.turn_on.gain,
+		})
+	end
+end
+
+
 -- Tocar som de apagar tocha
 hardtorch.som_apagar = function(pos, torchname)
 	if hardtorch.registered_torchs[torchname].sounds.turn_off then
@@ -23,15 +35,39 @@ hardtorch.som_apagar = function(pos, torchname)
 end
 
 
--- Tocar som de acender tocha
-hardtorch.som_acender = function(pos, torchname)
-	if hardtorch.registered_torchs[torchname].sounds.turn_on then
-		minetest.sound_play(hardtorch.registered_torchs[torchname].sounds.turn_on.name, {
+-- Tocar som de apagar tocha pela agua
+hardtorch.som_apagar_por_agua = function(pos, torchname)
+	if hardtorch.registered_torchs[torchname].sounds.water_turn_off then
+		minetest.sound_play(hardtorch.registered_torchs[torchname].sounds.water_turn_off.name, {
 			pos = pos,
 			max_hear_distance = 7,
-			gain = hardtorch.registered_torchs[torchname].sounds.turn_on.gain,
+			gain = hardtorch.registered_torchs[torchname].sounds.water_turn_off.gain,
 		})
 	end
+end
+
+
+-- Calcular tempo restante de um node
+hardtorch.get_node_timeout = function(pos)
+	local meta = minetest.get_meta(pos)
+	local fuel = meta:get_string("hardtorch_fuel")
+	local wear = meta:get_int("hardtorch_wear")
+	local torchname = hardtorch.registered_nodes[minetest.get_node(pos).name]
+	local fulltime = hardtorch.registered_fuels[fuel].time
+	local time = (fulltime/65535)*wear
+	return fulltime-math.floor(time)
+end
+
+-- Calcular desgaste de um node
+hardtorch.get_node_wear = function(pos)
+	local meta = minetest.get_meta(pos)
+	local fuel = meta:get_string("hardtorch_fuel")
+	local torchname = hardtorch.registered_nodes[minetest.get_node(pos).name]
+	local fulltime = hardtorch.registered_fuels[fuel].time
+	local timer = minetest.get_node_timer(pos)
+	local time_rem = timer:get_timeout() - timer:get_elapsed()
+	local wear_rem = (65535/fulltime)*time_rem
+	return 65535-math.floor(wear_rem)
 end
 
 
@@ -78,6 +114,16 @@ hardtorch.find_item = function(player, itemname)
 		end
 	end
 	return false
+end
+
+
+-- Pegar combustivel no inventario de um jogador
+hardtorch.get_fuel_stack = function(player, torchname)
+	for _,fuelname in ipairs(hardtorch.registered_torchs[torchname].fuel) do
+		if hardtorch.find_item(player, fuelname) then
+			return hardtorch.find_and_get_item(player, fuelname)
+		end
+	end
 end
 
 

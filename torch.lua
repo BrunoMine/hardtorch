@@ -14,16 +14,38 @@
 local torch_nights = math.abs(tonumber(minetest.setting_get("hardtorch_torch_nights") or 1)) 
 if torch_nights <= 0 then torch_nights = 1 end
 
+-- Registra a tocha acessa como um combustivel
+hardtorch.register_fuel("hardtorch:torch_on", {
+	turns = 0.1,--torch_nights
+})
 
-hardtorch.register_torch("hardtorch:torch_tool", {
-	description = "Tocha",
+-- Ajuste na tocha padrão
+minetest.override_item("default:torch", {
+	inventory_image = "hardtorch_torch_tool_off.png",
+	wield_image = "hardtorch_torch_tool_off.png",
+})
+
+-- Registrar ferramentas
+minetest.register_tool("hardtorch:torch", {
+	description = "Torch (used)",
+	inventory_image = "hardtorch_torch_tool_off.png",
+	wield_image = "hardtorch_torch_tool_off.png",
+	groups = {not_in_creative_inventory = 1},
+})
+
+-- Versao acessa da ferramenta
+minetest.register_tool("hardtorch:torch_on", {
+	description = "Torch (using)",
+	inventory_image = "hardtorch_torch_tool_on.png",
+	wield_image = "hardtorch_torch_tool_on_mao.png",
+	groups = {not_in_creative_inventory = 1},
+})
+
+-- Registrar tocha
+hardtorch.register_torch("hardtorch:torch", {
 	night_turns = torch_nights,
 	light_source = 11,
-	inventory_image = {
-		on = "hardtorch_torch_tool_on.png",
-		off = "hardtorch_torch_tool_off.png",
-	},
-	wield_image = "hardtorch_torch_tool_off.png",
+	fuel = {"hardtorch:torch_on"},
 	nodes = {
 		node = "default:torch", 
 		node_ceiling = "default:torch_ceiling", 
@@ -31,7 +53,9 @@ hardtorch.register_torch("hardtorch:torch_tool", {
 	},
 	sounds = {
 		turn_off = {name="hardtorch_apagando_tocha", gain=0.2},
-	}
+		water_turn_off = {name="hardtorch_apagando_tocha", gain=0.2},
+	},
+	drop_on_water = "default:stick",
 })
 
 
@@ -42,18 +66,12 @@ minetest.register_lbm({
 	action = function(pos, node)
 		-- Define desgaste inicial caso necessario
 		local meta = minetest.get_meta(pos)
-		if not meta:get_int("hardtorch_wear") then
+		if not meta:get_string("hardtorch_fuel") then
+			meta:set_string("hardtorch_fuel", "hardtorch:torch_on")
 			meta:set_int("hardtorch_wear", 0)
 		end
 
 		-- Inicia contagem para acabar fogo de acordo com desgaste definido
-		local timeout = (hardtorch.registered_torches[torchname].torch_time/65535)*(65535-meta:get_int("hardtorch_wear"))
-		minetest.get_node_timer(pos):start(timeout)
+		minetest.get_node_timer(pos):start(hardtorch.get_node_timeout(pos))
 	end,
-})
-
-
-minetest.override_item("default:torch", {
-	inventory_image = "hardtorch_torch_tool_off.png",
-	wield_image = "hardtorch_torch_tool_off.png",
 })

@@ -10,6 +10,18 @@
 	
   ]]
 
+-- Registrar Combustivel
+hardtorch.register_fuel = function(name, def)
+	
+	hardtorch.registered_fuels[name] = {}
+	local registro = hardtorch.registered_fuels[name]
+	
+	registro.turns = def.turns
+	registro.time = (def.turns*(12*60*60))/tonumber(minetest.setting_get("time_speed") or 72)
+	registro.loop_wear = (65535/registro.time)*2
+	
+end
+
 
 -- Registrar tocha
 hardtorch.register_torch = function(name, def)
@@ -31,15 +43,9 @@ hardtorch.register_torch = function(name, def)
 	
 	-- Certifica que jogador que acabou de entrar esteja com tocha acessa, caso contrario apaga ela
 	minetest.register_on_joinplayer(function(player)
-		local inv = player:get_inventory()
-	
-		-- Verifica se tem tocha acessa
-		if inv:contains_item("main", name.."_on") 
-			or inv:contains_item("craft", name.."_on") 
-		then 
+		if hardtorch.find_item(player, name.."_on") == true then
 			hardtorch.apagar_tocha(player, name)
 		end
 	
 	end)
-	
 end

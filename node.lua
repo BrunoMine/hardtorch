@@ -26,55 +26,73 @@ hardtorch.register_node = function(torchname, def)
 		local inv = digger:get_inventory()
 	
 		-- Calcula desgaste
-		local timer = minetest.get_node_timer(pos)
-		local t_rest = timer:get_timeout() - timer:get_elapsed()
-		local w_rest = (65535/hardtorch.registered_torchs[torchname].torch_time)*t_rest
-		local itemstack = {name=torchname, count=1, wear=65535-w_rest, metadata=""}
-	
-		-- Verifica se cabe no inventario
+		local wear = hardtorch.get_node_wear(pos)
+		local itemstack = {name=torchname, count=1}
+		
+		-- Caso o combustivel seja o proprio item, repassa desgaste
+		if torchname.."_on" == meta:get_string("hardtorch_fuel") then
+			itemstack.wear = wear
+		end
+		
+		-- Torna acessa caso ainda nao tenha nenhuma (sem loop)
+		if not hardtorch.em_loop[digger:get_player_name()] then
+			itemstack.name = torchname.."_on"
+		end
+		
+		-- Verifica se tocha cabe no inventario
 		if inv:room_for_item("main", itemstack) then
-			
-			-- Mantem ferramenta ativa (sem loop) para identificar depois
-			if not hardtorch.em_loop[digger:get_player_name()] then
-				itemstack.name = torchname.."_on"
-			end
-			
+						
 			-- Coloca no inventario
 			inv:add_item("main", itemstack)
 			
-			-- Acende tocha caso jogador nao tenha uma acessa ainda
+			-- Acende com loop caso adicinou acesa anteriormente
 			if not hardtorch.em_loop[digger:get_player_name()] then
 				local list, i, itemstack = hardtorch.find_and_get_item(digger, torchname.."_on")
-				itemstack:set_name(torchname) -- restaura o nome para acender em definitivo (com loop)
+				itemstack:set_name(torchname)
 				itemstack = hardtorch.acender_tocha(itemstack, digger)
 				inv:set_stack(list, i, itemstack)
 			end
+			
 			
 		else
 			-- Dropa no local
 			minetest.add_item(pos, itemstack)
 		end
+		
+		-- Verifica se combustivel cabe no inventario
+		if torchname.."_on" ~= meta:get_string("hardtorch_fuel") then
+			local fuelstack = {name=meta:get_string("hardtorch_fuel"), count=1, wear=wear}
+			
+			if inv:room_for_item("main", fuelstack) then
+						
+				-- Coloca no inventario
+				inv:add_item("main", fuelstack)
+			else
+				-- Dropa no local
+				minetest.add_item(pos, fuelstack)
+			end
+		end
 	
 		minetest.remove_node(pos)
 	end
 
-
+	
 	-- Adiciona uso para node de tochas ser substituindo por ferramenta de tocha (que será acessa)
-	local on_use = function(itemstack, player, pointed_thing)
+	on_use = function(itemstack, player, pointed_thing)
 		local sobra = itemstack:get_count() - 1
 		local inv = player:get_inventory()
-	
+		
 		-- Localiza o item no iventario
 		local list, i = player:get_wield_list(), player:get_wield_index()
 		local itemstack2 = inv:get_stack(list, i)
 		if itemstack:to_string() ~= itemstack2:to_string() then
 			return
 		end
-	
-		-- Troca o item por uma tocha acessa
-		itemstack:replace({name=torchname.."_on", count=1, wear=0, metadata=""})
+
+		-- Troca o item pela ferramenta
+		itemstack:replace({name=torchname, count=1, wear=0, metadata=""})
 		inv:set_stack(list, i, itemstack)
-	
+
 		-- Caso tenha sobra tenta colocar no inventario, ou joga no chão (com aviso sonoro e textual)
 		if sobra > 0 then
 			if inv:room_for_item("main", nodes.node.." "..sobra) then
@@ -88,24 +106,31 @@ hardtorch.register_node = function(torchname, def)
 				inv:set_stack(list, i, itemstack)
 			end
 		end
+	
+		itemstack:set_name(torchname) -- restaura nome da tocha	
 		
-		itemstack:set_name(torchname) -- restaura nome da tocha		
-		return hardtorch.acender_tocha(itemstack, player)
+		return itemstack
 	end
 
 
 	-- Atualiza as tocha apos colocar
 	local after_place_node = function(pos, placer, itemstack, pointed_thing)
-	
-		-- Define desgaste inicial caso necessario
-		local meta = minetest.get_meta(pos)
-		if not meta:get_int("hardtorch_wear") then
-			meta:set_int("hardtorch_wear", 0)
-		end
 		
-		-- Inicia contagem para acabar fogo de acordo com desgaste definido
-		local timeout = (hardtorch.registered_torchs[torchname].torch_time/65535)*(65535-meta:get_int("hardtorch_wear"))
-		minetest.get_node_timer(pos):start(timeout)
+		-- Certifica de que iniciou contagem
+		local timer = minetest.get_node_timer(pos)
+		if timer:is_started() ~= true then
+			-- Define desgaste inicial caso necessario
+			local meta = minetest.get_meta(pos)
+			if meta:get_string("hardtorch_fuel") == "" then
+				meta:set_string("hardtorch_fuel", def.fuel[1])
+				meta:set_int("hardtorch_wear", 0)
+			else
+				minetest.chat_send_all("tocha colocada tem realmente wear = "..meta:get_int("hardtorch_wear"))
+			end
+		
+			-- Inicia contagem para acabar fogo de acordo com desgaste definido
+			timer:start(hardtorch.get_node_timeout(pos))
+		end
 	
 	end
 
@@ -114,7 +139,7 @@ hardtorch.register_node = function(torchname, def)
 		-- remove bloco
 		minetest.remove_node(pos)
 	end
-
+	
 	local node_torch_def = {
 		drop="", 
 		on_dig=on_dig, 
@@ -123,6 +148,12 @@ hardtorch.register_node = function(torchname, def)
 		on_timer=on_timer,
 	}
 	
+	-- Impedir colocação normal em casos especiais
+	if hardtorch.torch_lighter then
+		node_torch_def.on_place = function(itemstack, placer, pointed_thing)
+			return itemstack
+		end
+	end
 	
 	-- Atualiza tochas com novas funcões de chamadas
 	minetest.override_item(def.nodes.node, node_torch_def)
@@ -140,8 +171,10 @@ hardtorch.register_node = function(torchname, def)
 		catch_up = false,
 		action = function(pos, node)
 			if hardtorch.check_torch_area(pos) == false then
-				hardtorch.som_apagar(pos, torchname)
+				local wear = hardtorch.get_node_wear(pos)
+				hardtorch.som_apagar_por_agua(pos, torchname)
 				minetest.remove_node(pos)
+				minetest.add_item(pos, def.drop_on_water or {name=torchname, wear=wear})
 			end
 		end,
 	})

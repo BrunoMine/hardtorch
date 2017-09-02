@@ -35,6 +35,8 @@ hardtorch.acendedores = {
 	["fire:flint_and_steel"] = 1000,
 }
 
+hardtorch.registered_fuels = {}
+
 hardtorch.registered_torchs = {}
 
 
@@ -58,4 +60,5 @@ dofile(modpath.."/tool.lua")
 dofile(modpath.."/node.lua")
 dofile(modpath.."/api.lua")
 dofile(modpath.."/torch.lua")
+dofile(modpath.."/lamp.lua")
 notificar("[OK]!")
