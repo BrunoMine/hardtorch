@@ -19,7 +19,6 @@ if oil_nights <= 0 then oil_nights = 1.2 end
 minetest.register_tool("hardtorch:oil", {
 	description = "Oleo",
 	inventory_image = "hardtorch_oil.png",
-	stack_max = 1,
 })
 
 

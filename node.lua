@@ -96,12 +96,12 @@ hardtorch.register_node = function(torchname, def)
 
 		-- Caso tenha sobra tenta colocar no inventario, ou joga no chão (com aviso sonoro e textual)
 		if sobra > 0 then
-			if inv:room_for_item("main", nodes.node.." "..sobra) then
+			if inv:room_for_item("main", def.nodes.node.." "..sobra) then
 				-- Coloca no inventario
-				inv:add_item("main", nodes.node.." "..sobra)
+				inv:add_item("main", def.nodes.node.." "..sobra)
 			else
 				-- Coloca a tocha no inventario para poder dropa-la
-				inv:set_stack(list, i, nodes.node" "..sobra)
+				inv:set_stack(list, i, def.nodes.node" "..sobra)
 				minetest.item_drop(inv:get_stack(list, i), player, player:getpos())
 				-- Recoloca tocha
 				inv:set_stack(list, i, itemstack)
@@ -135,8 +135,21 @@ hardtorch.register_node = function(torchname, def)
 
 	-- Remove tocha quando fogo acabar
 	local on_timer = function(pos, elapsed)
-		-- remove bloco
-		minetest.remove_node(pos)
+		
+		if def.nodes_off then
+			local node = minetest.get_node(pos)
+			
+			if node.name == def.nodes.node then
+				node.name=def.nodes_off.node
+			elseif node.name == def.nodes.node_ceiling then
+				node.name=def.nodes_off.node_ceiling
+			elseif node.name == def.nodes.node_wall then
+				node.name=def.nodes_off.node_wall
+			end
+			minetest.set_node(pos, node)
+		else
+			minetest.remove_node(pos)
+		end
 	end
 	
 	local node_torch_def = {

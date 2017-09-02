@@ -1,15 +1,20 @@
 # Configurações aplicaveis para o menu gráfico
 
 
-# Quantidade de noites que uma tocha perdura acessa.
+# Numero de noites que uma Tocha perdura acesa.
+# Number of nights a Torch remains lit.
 # (Precisao de 2 segundos)
-hardtorch_torch_nights (Durabilidade da Tocha em noites) float 1
+hardtorch_torch_nights (Durabilidade - Tocha) float 0.1
+
+# Numero de noites que uma porção de Oleo perdura acesa.
+# Number of nights a portion of Oil remains lit.
+# (Precisao de 2 segundos)
+hardtorch_lamp_nights (Durabilidade - Oil) float 1.2
 
 
-# Isso obriga o jogador a ter algum acendedor no inventario para ligar a tocha.
-# Bater a tocha em fontes de fogo tambem acendem a tocha
-# (Precisao de 2 segundos)
-hardtorch_torch_lighter (Acendedor de Tocha) bool false
+# É necessario acendedor ou fonte de fogo para acender uma tocha.
+# Lighter or fire source is needed to light a torch.
+hardtorch_torch_lighter (Acendedor/lighter) bool false
 
 
 

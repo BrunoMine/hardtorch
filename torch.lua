@@ -21,9 +21,10 @@ hardtorch.register_fuel("hardtorch:torch_on", {
 
 -- Registrar ferramentas
 minetest.register_tool("hardtorch:torch", {
-	description = "Torch",
+	description = "Torch (used)",
 	inventory_image = "hardtorch_torch_tool_off.png",
 	wield_image = "hardtorch_torch_tool_off.png",
+	groups = {not_in_creative_inventory = 1},
 })
 
 -- Versao acessa da ferramenta
@@ -71,11 +72,10 @@ minetest.register_lbm({
 
 -- Ajuste na tocha padrão
 do
-	-- Remove receita de nodes de tochas
-	minetest.clear_craft({output = 'default:torch'})
-	minetest.registered_nodes["default:torch"].groups.not_in_creative_inventory = 1
 	minetest.override_item("default:torch", {
-		groups = minetest.registered_nodes["default:torch"].groups
+		-- Muda imagem para jogador saber que tem que acendela
+		inventory_image = "hardtorch_torch_tool_off.png",
+		wield_image = "hardtorch_torch_tool_off.png",
 	})
 end
 

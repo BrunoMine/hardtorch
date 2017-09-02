@@ -43,9 +43,9 @@ hardtorch.apagar_tocha = function(player, torchname)
 	local list, i, itemstack = hardtorch.find_and_get_item(player, torchname.."_on")
 	if list then
 		local inv = player:get_inventory()
-		
+		-- Coloca no lugar 
 		itemstack:set_name(torchname)
-		inv:set_stack(list, i, torchname)
+		inv:set_stack(list, i, itemstack)
 	end
 end
 
