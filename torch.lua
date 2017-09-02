@@ -11,8 +11,8 @@
 
 
 -- Noites de durabilidade da tocha
-local torch_nights = math.abs(tonumber(minetest.setting_get("hardtorch_torch_nights") or 1)) 
-if torch_nights <= 0 then torch_nights = 1 end
+local torch_nights = math.abs(tonumber(minetest.setting_get("hardtorch_torch_nights") or 0.1)) 
+if torch_nights <= 0 then torch_nights = 0.1 end
 
 -- Registra a tocha acessa como um combustivel
 hardtorch.register_fuel("hardtorch:torch_on", {
@@ -81,7 +81,7 @@ end
 
 -- Receita da Tocha
 minetest.register_craft({
-	output = 'hardtorch:torch',
+	output = 'hardtorch:torch 4',
 	recipe = {
 		{'default:coal_lump'},
 		{'group:stick'},

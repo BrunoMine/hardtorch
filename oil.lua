@@ -11,8 +11,8 @@
 
 
 -- Noites de durabilidade da tocha da lamparina
-local oil_nights = math.abs(tonumber(minetest.setting_get("hardtorch_oil_nights") or 1)) 
-if oil_nights <= 0 then oil_nights = 1 end
+local oil_nights = math.abs(tonumber(minetest.setting_get("hardtorch_oil_nights") or 1.2)) 
+if oil_nights <= 0 then oil_nights = 1.2 end
 
 
 -- Oleo de lamparina
@@ -30,12 +30,11 @@ hardtorch.register_fuel("hardtorch:oil", {
 
 
 -- Receitas para oleo
-
 minetest.register_craft({
 	output = 'hardtorch:oil',
 	recipe = {
-		{'group:leaves', 'group:leaves', 'group:leaves'},
-		{'group:leaves', 'group:leaves', 'group:leaves'},
-		{'group:leaves', 'group:leaves', 'group:leaves'},
+		{'default:coal_lump'},
+		{'default:coal_lump'},
+		{'default:coal_lump'},
 	}
 })
