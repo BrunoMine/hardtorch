@@ -16,7 +16,7 @@ if torch_nights <= 0 then torch_nights = 0.1 end
 
 -- Registra a tocha acessa como um combustivel
 hardtorch.register_fuel("hardtorch:torch_on", {
-	turns = 0.1,--torch_nights
+	turns = torch_nights,
 })
 
 -- Registrar ferramentas
