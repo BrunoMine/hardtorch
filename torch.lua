@@ -14,6 +14,18 @@
 local torch_nights = math.abs(tonumber(minetest.setting_get("hardtorch_torch_nights") or 0.1)) 
 if torch_nights <= 0 then torch_nights = 0.1 end
 
+
+-- Ajuste na tocha padrão
+do
+	minetest.override_item("default:torch", {
+		-- Muda imagem para jogador saber que tem que acendela
+		inventory_image = "hardtorch_torch_tool_off.png",
+		wield_image = "hardtorch_torch_tool_off.png",
+		light_source = 11
+	})
+end
+
+
 -- Registra a tocha acessa como um combustivel
 hardtorch.register_fuel("hardtorch:torch_on", {
 	turns = torch_nights,
@@ -29,7 +41,6 @@ minetest.register_tool("hardtorch:torch", {
 
 -- Versao acessa da ferramenta
 minetest.register_tool("hardtorch:torch_on", {
-	description = "Torch Lit",
 	inventory_image = "hardtorch_torch_tool_on.png",
 	wield_image = "hardtorch_torch_tool_on_mao.png",
 	groups = {not_in_creative_inventory = 1},
@@ -37,8 +48,7 @@ minetest.register_tool("hardtorch:torch_on", {
 
 -- Registrar tocha
 hardtorch.register_torch("hardtorch:torch", {
-	night_turns = torch_nights,
-	light_source = 10,
+	light_source = minetest.registered_nodes["default:torch"].light_source,
 	fuel = {"hardtorch:torch_on"},
 	nodes = {
 		node = "default:torch", 
@@ -69,14 +79,6 @@ minetest.register_lbm({
 	end,
 })
 
--- Ajuste na tocha padrão
-do
-	minetest.override_item("default:torch", {
-		-- Muda imagem para jogador saber que tem que acendela
-		inventory_image = "hardtorch_torch_tool_off.png",
-		wield_image = "hardtorch_torch_tool_off.png",
-	})
-end
 
 -- Receita da Tocha
 minetest.register_craft({

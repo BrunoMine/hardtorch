@@ -18,7 +18,9 @@ hardtorch.register_node = function(torchname, def)
 	
 	for nt,nn in pairs(def.nodes) do
 		hardtorch.registered_nodes[nn] = torchname
-		hardtorch.fontes_de_fogo[nn] = true
+		if def.nodes.fire_source ~= false then
+			hardtorch.fontes_de_fogo[nn] = true
+		end
 	end
 	
 	-- Recuperar o desgaste apos coletado

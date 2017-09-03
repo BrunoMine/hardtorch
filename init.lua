@@ -13,29 +13,14 @@
 -- Tabela Global
 hardtorch = {}
 
-
 -- Tabela de jogadores em loop de tocha acessa
 hardtorch.em_loop = {}
 
 -- Requerer fonte de fogo para acender tocha
 hardtorch.torch_lighter = minetest.setting_getbool("hardtorch_torch_lighter") or false
 
-hardtorch.fontes_de_fogo = {
-	["default:furnace_active"] = true,
-	["default:lava_flowing"] = true,
-	["default:lava_source"] = true,
-	["fire:basic_flame"] = true,
-	["fire:permanent_flame"] = true,
-}
-
-hardtorch.acendedores = {
-	["fire:flint_and_steel"] = 1000,
-}
-
-hardtorch.registered_fuels = {}
-
-hardtorch.registered_torchs = {}
-
+-- Nodes que funcionam como fontes de fogo para acender tochas
+hardtorch.fontes_de_fogo = {}
 
 -- Notificador de Inicializador
 local notificar = function(msg)
@@ -55,8 +40,27 @@ dofile(modpath.."/comum.lua")
 dofile(modpath.."/luz.lua")
 dofile(modpath.."/tool.lua")
 dofile(modpath.."/node.lua")
+dofile(modpath.."/lighter.lua")
+dofile(modpath.."/fuel.lua")
 dofile(modpath.."/api.lua")
 dofile(modpath.."/torch.lua")
 dofile(modpath.."/oil.lua")
 dofile(modpath.."/lamp.lua")
 notificar("[OK]!")
+
+
+-- Pré ajustes
+
+-- Acendedor de pederneira
+hardtorch.register_lighter("fire:flint_and_steel", {
+	wear_by_use = 1000
+})
+
+-- Nodes fonte de fogo
+hardtorch.fontes_de_fogo["default:furnace_active"] = true
+hardtorch.fontes_de_fogo["default:lava_flowing"] = true
+hardtorch.fontes_de_fogo["default:lava_source"] = true
+hardtorch.fontes_de_fogo["fire:basic_flame"] = true
+hardtorch.fontes_de_fogo["fire:permanent_flame"] = true
+	
+	

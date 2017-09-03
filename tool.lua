@@ -147,10 +147,10 @@ hardtorch.register_tool = function(torchname, def)
 				then
 					return hardtorch.acender_tocha(itemstack, user)
 				end
-				for tool,wear in pairs(hardtorch.acendedores) do
+				for tool,def in pairs(hardtorch.registered_lighters) do
 					if hardtorch.find_item(user, tool) then
 						local list, i, item = hardtorch.find_and_get_item(user, tool)
-						item:add_wear(wear)
+						item:add_wear(def.wear_by_use)
 						user:get_inventory():set_stack(list, i, item)
 						return hardtorch.acender_tocha(itemstack, user)
 					end

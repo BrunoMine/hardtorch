@@ -158,8 +158,7 @@ minetest.override_item("hardtorch:lamp_node_active", {
 
 -- Registrar Lamparina
 hardtorch.register_torch("hardtorch:lamp", {
-	description = "Oil Lamp",
-	light_source = 12,
+	light_source = 13,
 	nodes = {
 		node = "hardtorch:lamp_node_active",
 	},
