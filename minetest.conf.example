@@ -1,24 +1,22 @@
-# Configurações aplicaveis para o menu gráfico
+# Esse arquivo contem configurações do Mod Hardtorch que podem ser a mudadas em minetest.conf
+# This file contains settings of Hardtorch Mod that can be changed in minetest.conf
 
 # Numero de noites que uma Tocha perdura acesa.
 # Number of nights a Torch remains lit.
-hardtorch_torch_nights (Durabilidade - Tocha) float 0.1 0
+#hardtorch_torch_nights = 0.1
 
 # Numero de noites que uma porção de Oleo perdura acesa.
 # Number of nights a portion of Oil remains lit.
-hardtorch_oil_nights (Durabilidade - Oleo/Oil) float 1.2 0
+#hardtorch_oil_nights = 1.2
 
 # Luminosidade da Tocha Acesa
 # Light source of Torch Lit
-hardtorch_torch_light_source (Luminosidade - Tocha) int 11 0
+#hardtorch_torch_light_source = 11
 
 # Luminosidade da Lamparina Acesa
 # Light source of Oil Lamp Lit
-hardtorch_lamp_light_source (Luminosidade - Lamparina/Oil Lamp) int 13 0
+#hardtorch_lamp_light_source = 13
 
 # É necessario acendedor ou fonte de fogo para acender uma tocha.
 # Lighter or fire source is needed to light a torch.
-hardtorch_torch_lighter (Acendedor/lighter) bool false
-
-
-
+#hardtorch_torch_lighter = false

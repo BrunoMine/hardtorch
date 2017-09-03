@@ -9,6 +9,9 @@
 	Registro de Tochas padrao
   ]]
 
+-- Luminosidade da lamparina
+local torch_light_source = math.abs(tonumber(minetest.setting_get("hardtorch_torch_light_source") or 11)) 
+
 
 -- Noites de durabilidade da tocha
 local torch_nights = math.abs(tonumber(minetest.setting_get("hardtorch_torch_nights") or 0.1)) 
@@ -21,7 +24,7 @@ do
 		-- Muda imagem para jogador saber que tem que acendela
 		inventory_image = "hardtorch_torch_tool_off.png",
 		wield_image = "hardtorch_torch_tool_off.png",
-		light_source = 11
+		light_source = torch_light_source
 	})
 end
 

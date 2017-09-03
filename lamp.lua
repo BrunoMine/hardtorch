@@ -10,6 +10,10 @@
   ]]
 
 
+-- Luminosidade da lamparina
+local lamp_light_source = math.abs(tonumber(minetest.setting_get("hardtorch_lamp_light_source") or 13)) 
+
+
 local tile_anim = {
 	name = "hardtorch_lamp_lado_active.png",
 	animation = {type = "vertical_frames", aspect_w = 16, aspect_h = 16, length = 3.3}
@@ -142,7 +146,7 @@ minetest.override_item("hardtorch:lamp_node", {
 -- Node ativo
 minetest.register_node("hardtorch:lamp_node_active", minetest.deserialize(def_lamp))
 minetest.override_item("hardtorch:lamp_node_active", {
-	light_source = 12,
+	light_source = lamp_light_source,
 	groups = {choppy=2, dig_immediate=3, flammable=1, attached_node=1, torch=1, not_in_creative_inventory = 1},
 	tiles = {
 		"hardtorch_lamp_cima.png",
@@ -158,7 +162,7 @@ minetest.override_item("hardtorch:lamp_node_active", {
 
 -- Registrar Lamparina
 hardtorch.register_torch("hardtorch:lamp", {
-	light_source = 13,
+	light_source = lamp_light_source,
 	nodes = {
 		node = "hardtorch:lamp_node_active",
 	},
