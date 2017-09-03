@@ -101,7 +101,7 @@ hardtorch.register_node = function(torchname, def)
 				inv:add_item("main", def.nodes.node.." "..sobra)
 			else
 				-- Coloca a tocha no inventario para poder dropa-la
-				inv:set_stack(list, i, def.nodes.node" "..sobra)
+				inv:set_stack(list, i, def.nodes.node.." "..sobra)
 				minetest.item_drop(inv:get_stack(list, i), player, player:getpos())
 				-- Recoloca tocha
 				inv:set_stack(list, i, itemstack)
