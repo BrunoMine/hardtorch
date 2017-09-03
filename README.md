@@ -1,12 +1,22 @@
 HardTorch v0.5.0-alpha
 ======================
 
+[![Baixar](https://img.shields.io/badge/Baixar-v1.0.2-green.svg)](https://github.com/BrunoMine/hardtorch/archive/v1.0.2.zip)
+[![Projeto](https://img.shields.io/badge/Git-Projeto-green.svg)](https://github.com/BrunoMine/hardtorch)
+[![!Bower](https://img.shields.io/badge/Bower-Projeto-green.svg)](https://minetest-bower.herokuapp.com/mods/hardtorch)
+[![Licença](https://img.shields.io/badge/Licença-LGPL_v3.0-blue.svg)](https://github.com/BrunoMine/hardtorch/blob/master/LICENSE.txt)
+
 Este mod vai tornar as tochas muito mais realistas.
 _This mod will make torches much more realistic._
 
+## Requisitos _(Requirements)_
+* Minetest 0.4.16
+* Mod default
+* Mod fire
+
 # Configuraçes _(Settings)_
-Veja as configuraçes no menu de configurações avançadas da interface grafica de Minetest ou em minetest.conf.example.
-_See the settings in the advanced settings menu of the Minetest GUI or in minetest.conf.example._
+Veja as configuraçes no menu de configurações avançadas da interface grafica de Minetest ou em [minetest.conf.example](https://github.com/BrunoMine/hardtorch/blob/master/minetest.conf.example).
+_See the settings in the advanced settings menu of the Minetest GUI or in [minetest.conf.example](https://github.com/BrunoMine/hardtorch/blob/master/minetest.conf.example)._
 
 # Licença _(License)_
 Veja LICENSE.txt para informações detalhadas da licença LGPL 3.0
