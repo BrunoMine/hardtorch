@@ -49,7 +49,6 @@ hardtorch.register_torch("hardtorch:torch", {
 		turn_off = {name="hardtorch_apagando_tocha", gain=0.2},
 		water_turn_off = {name="hardtorch_apagando_tocha", gain=0.2},
 	},
-	drop_on_water = "default:stick",
 })
 
 
