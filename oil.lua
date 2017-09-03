@@ -17,7 +17,7 @@ if oil_nights <= 0 then oil_nights = 1.2 end
 
 -- Oleo de lamparina
 minetest.register_tool("hardtorch:oil", {
-	description = "Oleo",
+	description = "Oil",
 	inventory_image = "hardtorch_oil.png",
 })
 
