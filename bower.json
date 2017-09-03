@@ -1,0 +1,17 @@
+{
+    "name": "hardtorch",
+    "description": "Tochas realistas para Minetest",
+    "keywords": [
+        "torch",
+        "tochas",
+        "hardcore",
+        "realistic"
+    ],
+    "forum": "https://forum.minetest.net/viewtopic.php?f=9&t=18376",
+    "screenshots": [
+        "https://raw.githubusercontent.com/BrunoMine/hardtorch/master/screenshot.png"
+    ],
+    "authors": [
+        "BrunoMine"
+    ]
+}
