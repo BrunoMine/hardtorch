@@ -2,20 +2,15 @@ HardTorch v0.5.0-alpha
 ======================
 
 Este mod vai tornar as tochas muito mais realistas.
+_This mod will make torches much more realistic._
 
-This mod will make torches much more realistic.
-
-# Configuraçes (Settings)
-
+# Configuraçes _(Settings)_
 Veja as configuraçes no menu de configurações avançadas da interface grafica de Minetest ou em minetest.conf.example.
+_See the settings in the advanced settings menu of the Minetest GUI or in minetest.conf.example._
 
-See the settings in the advanced settings menu of the Minetest GUI or in minetest.conf.example.
-
-# Licença (License)
-
+# Licença _(License)_
 Veja LICENSE.txt para informações detalhadas da licença LGPL 3.0
-
-See LICENSE.txt for detailed info about LGPL 3.0 license
+_See LICENSE.txt for detailed info about LGPL 3.0 license_
 
 Autores do código fonte
 -----------------------
