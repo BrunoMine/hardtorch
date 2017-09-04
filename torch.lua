@@ -59,6 +59,7 @@ hardtorch.register_torch("hardtorch:torch", {
 		node_wall = "default:torch_wall"
 	},
 	sounds = {
+		turn_on = {name="hardtorch_acendendo_tocha", gain=0.2},
 		turn_off = {name="hardtorch_apagando_tocha", gain=0.2},
 		water_turn_off = {name="hardtorch_apagando_tocha", gain=0.2},
 	},

@@ -169,6 +169,11 @@ hardtorch.register_torch("hardtorch:lamp", {
 	nodes_off = {
 		node = "hardtorch:lamp_node",
 	},
+	sounds = {
+		turn_on = {name="hardtorch_click_oil_lamp", gain=0.2},
+		turn_off = {name="hardtorch_click_oil_lamp", gain=0.2},
+		water_turn_off = {name="hardtorch_apagando_tocha", gain=0.2},
+	},
 	fuel = {"hardtorch:oil"},
 })
 
