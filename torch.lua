@@ -73,7 +73,7 @@ minetest.register_lbm({
 	action = function(pos, node)
 		-- Define desgaste inicial caso necessario
 		local meta = minetest.get_meta(pos)
-		if not meta:get_string("hardtorch_fuel") then
+		if meta:get_string("hardtorch_fuel") == "" then
 			meta:set_string("hardtorch_fuel", "hardtorch:torch_on")
 			meta:set_int("hardtorch_wear", 0)
 		end

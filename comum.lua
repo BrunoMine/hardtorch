@@ -50,9 +50,9 @@ end
 -- Calcular tempo restante de um node
 hardtorch.get_node_timeout = function(pos)
 	local meta = minetest.get_meta(pos)
-	local fuel = meta:get_string("hardtorch_fuel")
-	local wear = meta:get_int("hardtorch_wear")
 	local torchname = hardtorch.registered_nodes[minetest.get_node(pos).name]
+	local fuel = meta:get_string("hardtorch_fuel") or hardtorch.registered_torchs[torchname].fuel[1]
+	local wear = meta:get_int("hardtorch_wear")
 	local fulltime = hardtorch.registered_fuels[fuel].time
 	local time = (fulltime/65535)*wear
 	return fulltime-math.floor(time)
