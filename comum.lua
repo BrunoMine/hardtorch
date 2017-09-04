@@ -51,7 +51,9 @@ end
 hardtorch.get_node_timeout = function(pos)
 	local meta = minetest.get_meta(pos)
 	local torchname = hardtorch.registered_nodes[minetest.get_node(pos).name]
-	local fuel = meta:get_string("hardtorch_fuel") or hardtorch.registered_torchs[torchname].fuel[1]
+	local fuel = meta:get_string("hardtorch_fuel")
+	-- Verifica combustivel
+	if fuel == "" then fuel = hardtorch.registered_torchs[torchname].fuel[1] end
 	local wear = meta:get_int("hardtorch_wear")
 	local fulltime = hardtorch.registered_fuels[fuel].time
 	local time = (fulltime/65535)*wear
@@ -63,6 +65,8 @@ hardtorch.get_node_wear = function(pos)
 	local meta = minetest.get_meta(pos)
 	local fuel = meta:get_string("hardtorch_fuel")
 	local torchname = hardtorch.registered_nodes[minetest.get_node(pos).name]
+	-- Verifica combustivel
+	if fuel == "" then fuel = hardtorch.registered_torchs[torchname].fuel[1] end
 	local fulltime = hardtorch.registered_fuels[fuel].time
 	local timer = minetest.get_node_timer(pos)
 	local time_rem = timer:get_timeout() - timer:get_elapsed()
