@@ -120,7 +120,7 @@ hardtorch.register_node = function(torchname, def)
 
 	-- Atualiza as tocha apos colocar
 	local after_place_node = function(pos, placer, itemstack, pointed_thing)
-		if not hardtorch.registered_nodes[node.name] then return end
+		if not hardtorch.registered_nodes[minetest.get_node(pos).name] then return end
 		
 		-- Certifica de que iniciou contagem
 		local timer = minetest.get_node_timer(pos)
