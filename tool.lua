@@ -134,6 +134,7 @@ hardtorch.register_tool = function(torchname, def)
 	-- Ajusta a ferramenta criada
 	minetest.override_item(torchname, {
 		on_use = function(itemstack, user, pointed_thing)
+			if itemstack:get_name() ~= torchname then return end
 			
 			-- Verifica se ja tem uma tocha acessa
 			if hardtorch.em_loop[user:get_player_name()] then
@@ -162,6 +163,7 @@ hardtorch.register_tool = function(torchname, def)
 
 		-- Ao colocar funciona como tocha normal apenas repassando o desgaste
 		on_place = function(itemstack, placer, pointed_thing)
+			if itemstack:get_name() ~= torchname then return end
 			
 			if pointed_thing.type ~= "node" then
 				return itemstack
@@ -199,6 +201,8 @@ hardtorch.register_tool = function(torchname, def)
 		wield_image = "hardtorch_torch_tool_on_mao.png",
 		
 		on_use = function(itemstack, user, pointed_thing)
+			if itemstack:get_name() ~= torchname then return end
+			
 			-- Remover luz
 			hardtorch.som_apagar(user:getpos(), torchname)
 			hardtorch.apagar_node_luz(user:get_player_name())
@@ -208,6 +212,8 @@ hardtorch.register_tool = function(torchname, def)
 		end,
 
 		on_drop = function(itemstack, dropper, pos)
+			if itemstack:get_name() ~= torchname then return end
+			
 			-- Remover luz
 			hardtorch.apagar_node_luz(dropper:get_player_name())
 			hardtorch.remover_luz_hud(dropper)
@@ -220,6 +226,8 @@ hardtorch.register_tool = function(torchname, def)
 
 		-- Ao colocar funciona como tocha normal apenas repassando o desgaste
 		on_place = function(itemstack, placer, pointed_thing)
+			if itemstack:get_name() ~= torchname then return end
+			
 			if pointed_thing.type ~= "node" then
 				return itemstack
 			end

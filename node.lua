@@ -25,6 +25,7 @@ hardtorch.register_node = function(torchname, def)
 	
 	-- Recuperar o desgaste apos coletado
 	local on_dig = function(pos, node, digger)
+		if not hardtorch.registered_nodes[node.name] then return end
 		local meta = minetest.get_meta(pos)
 		local inv = digger:get_inventory()
 	
@@ -82,6 +83,7 @@ hardtorch.register_node = function(torchname, def)
 	
 	-- Adiciona uso para node de tochas ser substituindo por ferramenta de tocha (que será acessa)
 	local on_use = function(itemstack, player, pointed_thing)
+		if not hardtorch.registered_nodes[itemstack:get_name()] then return end
 		local sobra = itemstack:get_count() - 1
 		local inv = player:get_inventory()
 		
@@ -118,6 +120,7 @@ hardtorch.register_node = function(torchname, def)
 
 	-- Atualiza as tocha apos colocar
 	local after_place_node = function(pos, placer, itemstack, pointed_thing)
+		if not hardtorch.registered_nodes[node.name] then return end
 		
 		-- Certifica de que iniciou contagem
 		local timer = minetest.get_node_timer(pos)
@@ -137,6 +140,7 @@ hardtorch.register_node = function(torchname, def)
 
 	-- Remove tocha quando fogo acabar
 	local on_timer = function(pos, elapsed)
+		if not hardtorch.registered_nodes[minetest.get_node(pos).name] then return end
 		
 		if def.nodes_off then
 			local node = minetest.get_node(pos)
