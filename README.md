@@ -15,11 +15,11 @@ _This mod will make torches much more realistic._
 * Mod default
 * Mod fire
 
-# Configuraçes _(Settings)_
+## Configuraçes _(Settings)_
 Veja as configuraçes no menu de configurações avançadas da interface grafica de Minetest ou em [minetest.conf.example](https://github.com/BrunoMine/hardtorch/blob/master/minetest.conf.example).
 _See the settings in the advanced settings menu of the Minetest GUI or in [minetest.conf.example](https://github.com/BrunoMine/hardtorch/blob/master/minetest.conf.example)._
 
-# Licença _(License)_
+## Licença _(License)_
 Veja LICENSE.txt para informações detalhadas da licença LGPL 3.0
 _See LICENSE.txt for detailed info about LGPL 3.0 license_
 
