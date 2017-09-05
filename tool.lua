@@ -263,6 +263,18 @@ hardtorch.register_tool = function(torchname, def)
 					pointed_thing) or itemstack
 			end
 			
+			-- Verifica se ja iniciou loop
+			local loop = hardtorch.em_loop[placer:get_player_name()]
+			if not loop then
+				return itemstack
+			end
+			
+			-- Verifica se tem combustivel
+			local inv = placer:get_inventory()
+			if not loop or not loop.fuel or inv:get_stack(loop.fuel.list, loop.fuel.i):get_name() ~= loop.fuel.name then
+				return itemstack
+			end
+			
 			-- Verifica se tem algum impedimento no local
 			if hardtorch.check_torch_area(pointed_thing.above) == false then
 				return itemstack
@@ -288,18 +300,12 @@ hardtorch.register_tool = function(torchname, def)
 	
 			-- Repassa desgaste de combustivel
 			local fuelname, fuelwear
-			local loop = hardtorch.em_loop[placer:get_player_name()]
-			local inv = placer:get_inventory()
-			if loop and loop.fuel and inv:get_stack(loop.fuel.list, loop.fuel.i):get_name() == loop.fuel.name then
-				fuelname = loop.fuel.name
-				fuelwear = inv:get_stack(loop.fuel.list, loop.fuel.i):get_wear()
-				if inv:get_stack(loop.fuel.list, loop.fuel.i):get_name() ~= itemstack:get_name() then
-					local fuelstack = inv:get_stack(loop.fuel.list, loop.fuel.i)
-					fuelstack:take_item()
-					hardtorch.update_inv(placer, loop.fuel.list, loop.fuel.i, fuelstack)
-				end
-			else 
-				fuelname, fuelwear = def.fuel[1], 65000 -- perto do fim
+			fuelname = loop.fuel.name
+			fuelwear = inv:get_stack(loop.fuel.list, loop.fuel.i):get_wear()
+			if inv:get_stack(loop.fuel.list, loop.fuel.i):get_name() ~= itemstack:get_name() then
+				local fuelstack = inv:get_stack(loop.fuel.list, loop.fuel.i)
+				fuelstack:take_item()
+				hardtorch.update_inv(placer, loop.fuel.list, loop.fuel.i, fuelstack)
 			end
 			local meta = minetest.get_meta(pointed_thing.above)
 			meta:set_string("hardtorch_fuel", fuelname)
