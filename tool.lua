@@ -169,6 +169,16 @@ hardtorch.register_tool = function(torchname, def)
 				return itemstack
 			end
 			
+			-- Verifica se esta acessando outro node
+			local under = pointed_thing.under
+			local node = minetest.get_node(under)
+			local defnode = minetest.registered_nodes[node.name]
+			if defnode and defnode.on_rightclick and
+				((not placer) or (placer and not placer:get_player_control().sneak)) then
+				return defnode.on_rightclick(under, node, placer, itemstack,
+					pointed_thing) or itemstack
+			end
+			
 			-- Verifica se tem algum impedimento no local
 			if hardtorch.check_torch_area(pointed_thing.above) == false then
 				return itemstack
@@ -177,6 +187,17 @@ hardtorch.register_tool = function(torchname, def)
 			-- Verificar se é um node
 			if not minetest.registered_nodes[torchname] then
 				return itemstack
+			end
+			
+			-- Definir node de acordo com posicionamento
+			local above = pointed_thing.above
+			local wdir = minetest.dir_to_wallmounted(vector.subtract(under, above))
+			if wdir == 0 then
+				itemstack:set_name(def.nodes.node_ceiling or def.nodes.node)
+			elseif wdir == 1 then
+				itemstack:set_name(def.nodes.node)
+			else
+				itemstack:set_name(def.nodes.node_wall or def.nodes.node)
 			end
 			
 			-- Coloca node apagado
@@ -231,17 +252,26 @@ hardtorch.register_tool = function(torchname, def)
 			if pointed_thing.type ~= "node" then
 				return itemstack
 			end
-	
+			
+			-- Verifica se esta acessando outro node
+			local under = pointed_thing.under
+			local node = minetest.get_node(under)
+			local defnode = minetest.registered_nodes[node.name]
+			if defnode and defnode.on_rightclick and
+				((not placer) or (placer and not placer:get_player_control().sneak)) then
+				return defnode.on_rightclick(under, node, placer, itemstack,
+					pointed_thing) or itemstack
+			end
+			
 			-- Verifica se tem algum impedimento no local
 			if hardtorch.check_torch_area(pointed_thing.above) == false then
 				return itemstack
 			end
-	
-			local under = pointed_thing.under
+			
+			
+			-- Definir node de acordo com posicionamento
 			local above = pointed_thing.above
 			local wdir = minetest.dir_to_wallmounted(vector.subtract(under, above))
-			local wear = itemstack:get_wear()
-
 			if wdir == 0 then
 				itemstack:set_name(def.nodes.node_ceiling or def.nodes.node)
 			elseif wdir == 1 then
