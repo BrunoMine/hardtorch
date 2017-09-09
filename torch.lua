@@ -65,25 +65,6 @@ hardtorch.register_torch("hardtorch:torch", {
 	},
 })
 
-
--- Inicia desgaste em tochas antigas
-minetest.register_lbm({
-	name = "hardtorch:desgaste_tochas_antigas",
-	nodenames = {"default:torch", "default:torch_ceiling", "default:torch_wall"},
-	action = function(pos, node)
-		-- Define desgaste inicial caso necessario
-		local meta = minetest.get_meta(pos)
-		if meta:get_string("hardtorch_fuel") == "" then
-			meta:set_string("hardtorch_fuel", "hardtorch:torch_on")
-			meta:set_int("hardtorch_wear", 0)
-		end
-
-		-- Inicia contagem para acabar fogo de acordo com desgaste definido
-		minetest.get_node_timer(pos):start(hardtorch.get_node_timeout(pos))
-	end,
-})
-
-
 -- Receita da Tocha
 minetest.register_craft({
 	output = 'hardtorch:torch 4',
