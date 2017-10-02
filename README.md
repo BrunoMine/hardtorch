@@ -1,5 +1,5 @@
-HardTorch v0.5.0-alpha
-======================
+HardTorch v0.5.0
+================
 
 [![Baixar](https://img.shields.io/github/tag/BrunoMine/hardtorch.svg?style=flat-square&label=release)](https://github.com/BrunoMine/hardtorch/archive/master.zip)
 [![Projeto](https://img.shields.io/badge/Git-Projeto-green.svg)](https://github.com/BrunoMine/hardtorch)
