@@ -37,3 +37,6 @@ celeron55, Perttu Ahola <celeron55@gmail.com> (CC BY-SA 3.0)
 	hardtorch_apagando_tocha.2.ogg
 	hardtorch_apagando_tocha.3.ogg
 
+Jojikiba (CC BY-SA 3.0)
+	hardtorch_acendendo_tocha.ogg (editado por Lunovox)
+
