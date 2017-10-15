@@ -21,7 +21,9 @@ end
 
 
 -- Nodes de luz
+local nodes_luz_tb = {}
 for _,light in ipairs({"6", "7", "8", "9", "10", "11", "12", "13", "14"}) do
+	table.insert(nodes_luz_tb, "hardtorch:luz_"..light)
 	minetest.register_node("hardtorch:luz_"..light, {
 		drawtype = "airlike",
 		groups = {not_in_creative_inventory = 1},
@@ -60,12 +62,12 @@ hardtorch.loop_luz = function(name, torchname)
 		
 		-- Remove luz do local antigo
 		if string.match(minetest.get_node(lpos).name, "hardtorch:luz_") then
-			minetest.dig_node(lpos)
+			minetest.remove_node(lpos)
 		end
 		
 		-- Coloca no novo local
 		if minetest.get_node(lpa).name == "air" then
-			minetest.place_node({x=lpa.x,y=lpa.y+1,z=lpa.z}, {name="hardtorch:luz_"..hardtorch.registered_torchs[torchname].light_source})
+			minetest.add_node(lpa, {name="hardtorch:luz_"..hardtorch.registered_torchs[torchname].light_source})
 		end
 		local meta = minetest.get_meta(lpa)
 		meta:set_string("nome", name)
@@ -90,3 +92,13 @@ hardtorch.apagar_node_luz = function(name)
 	end
 end
 
+-- Remove luz residual indevida
+minetest.register_lbm({
+	label = "Remover luz residual",
+	name = "hardtorch:remove_light",
+	nodenames = nodes_luz_tb,
+	run_at_every_load = true,
+	action = function(pos, node)
+		minetest.remove_node(pos)
+	end,
+})
