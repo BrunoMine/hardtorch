@@ -64,12 +64,3 @@ hardtorch.register_torch("hardtorch:torch", {
 		water_turn_off = {name="hardtorch_apagando_tocha", gain=0.2},
 	},
 })
-
--- Receita da Tocha
-minetest.register_craft({
-	output = 'hardtorch:torch 4',
-	recipe = {
-		{'default:coal_lump'},
-		{'group:stick'},
-	}
-})
