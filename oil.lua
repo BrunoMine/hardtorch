@@ -11,7 +11,7 @@
 
 
 -- Noites de durabilidade da tocha da lamparina
-local oil_nights = math.abs(tonumber(minetest.setting_get("hardtorch_oil_nights") or 1.2)) 
+local oil_nights = math.abs(tonumber(minetest.settings:get("hardtorch_oil_nights") or 1.2)) 
 if oil_nights <= 0 then oil_nights = 1.2 end
 
 

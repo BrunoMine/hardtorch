@@ -172,6 +172,25 @@ hardtorch.remover_luz_hud = function(player)
 end
 
 
+-- Verifica se um numero representa luz e corrige se precisar
+hardtorch.check_light_number = function(n)
+	if not n then
+		return 1
+	end
+	
+	if not tonumber(n) then
+		return 1
+	end
+	
+	n = math.abs(tonumber(n))
+	
+	if n > 14 then
+		return 14
+	elseif n < 1 then
+		return 1
+	end
 
+	return n
+end
 
 

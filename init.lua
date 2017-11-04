@@ -17,14 +17,14 @@ hardtorch = {}
 hardtorch.em_loop = {}
 
 -- Requerer fonte de fogo para acender tocha
-hardtorch.torch_lighter = minetest.setting_getbool("hardtorch_torch_lighter") or false
+hardtorch.torch_lighter = (minetest.settings:get("hardtorch_torch_lighter") == "true") or false
 
 -- Nodes que funcionam como fontes de fogo para acender tochas
 hardtorch.fontes_de_fogo = {}
 
 -- Notificador de Inicializador
 local notificar = function(msg)
-	if minetest.setting_get("log_mods") then
+	if minetest.settings:get("log_mods") then
 		minetest.debug("[HardTorch]"..msg)
 	end
 end

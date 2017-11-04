@@ -11,8 +11,7 @@
 
 
 -- Luminosidade da lamparina
-local lamp_light_source = math.abs(tonumber(minetest.setting_get("hardtorch_lamp_light_source") or 13)) 
-
+local lamp_light_source = hardtorch.check_light_number(minetest.settings:get("hardtorch_lamp_light_source") or 13)
 
 local tile_anim = {
 	name = "hardtorch_lamp_lado_active.png",

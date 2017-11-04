@@ -43,14 +43,15 @@ da tocha, combustivel ou outro.
 ### Definições do node (`register_torch`)
 {
 	light_source = 13, --[[
-        ^ Intensidade de iluminação da tocha ao ser segurada acesa. ]]
+        ^ Intensidade de iluminação da tocha ao ser segurada acesa
+	^ Mínimo é 1 e máximo é 14 ]]
         
         nodes = { --[[
         ^ Todos os nodes informados terão as chamadas (callbacks) `on_dig`, `on_use`, `on_timer` 
           e `after_place_node`. Parametro `drop` do node tambem será mudado.]]
         	fire_source = true, --[[
         	^ Registra automaticamente esses nodes como fontes de fogo 
-        	^ Se omitido, serão registrados]] 
+        	^ Se omitido, serão registrados ]] 
 		node = "default:torch", -- Node que ilumina quando colocado no mapa
 		node_ceiling = "default:torch_ceiling", -- Opcional para nodes wallmounted
 		node_wall = "default:torch_wall", -- Opcional para nodes wallmounted
@@ -70,11 +71,11 @@ da tocha, combustivel ou outro.
 	
 	fuel = {"mymod:fuel_1", "mymod:fuel_2"}, --[[
 	^ Lista de itens consumiveis 
-	^ Precisam ser ferramentas desgastaveis]]
+	^ Precisam ser ferramentas desgastaveis ]]
 	
 	drop_on_water = "", --[[
 	^ Itemstring do item dropado quando a tocha é apagada pela agua 
-	^ Se omitido, dropa a propria tocha apagada]]
+	^ Se omitido, dropa a propria tocha apagada ]]
 }
 
 ### Definições do combustivel (`register_fuel`)

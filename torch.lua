@@ -10,11 +10,10 @@
   ]]
 
 -- Luminosidade da lamparina
-local torch_light_source = math.abs(tonumber(minetest.setting_get("hardtorch_torch_light_source") or 11)) 
-
+local torch_light_source = hardtorch.check_light_number(minetest.settings:get("hardtorch_torch_light_source") or 11) 
 
 -- Noites de durabilidade da tocha
-local torch_nights = math.abs(tonumber(minetest.setting_get("hardtorch_torch_nights") or 0.1)) 
+local torch_nights = math.abs(tonumber(minetest.settings:get("hardtorch_torch_nights") or 0.1)) 
 if torch_nights <= 0 then torch_nights = 0.1 end
 
 

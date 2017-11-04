@@ -22,7 +22,7 @@ end
 
 -- Nodes de luz
 local nodes_luz_tb = {}
-for _,light in ipairs({"6", "7", "8", "9", "10", "11", "12", "13", "14"}) do
+for _,light in ipairs({"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"}) do
 	table.insert(nodes_luz_tb, "hardtorch:luz_"..light)
 	minetest.register_node("hardtorch:luz_"..light, {
 		drawtype = "airlike",

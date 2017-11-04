@@ -9,12 +9,12 @@
 # Number of nights a portion of Oil remains lit.
 #hardtorch_oil_nights = 1.2
 
-# Luminosidade da Tocha Acesa
-# Light source of Torch Lit
+# Luminosidade da Tocha Acesa (limite: 14)
+# Light source of Torch Lit (limit: 14)
 #hardtorch_torch_light_source = 11
 
-# Luminosidade da Lamparina Acesa
-# Light source of Oil Lamp Lit
+# Luminosidade da Lamparina Acesa (limite: 14)
+# Light source of Oil Lamp Lit (limit: 14)
 #hardtorch_lamp_light_source = 13
 
 # É necessario acendedor ou fonte de fogo para acender uma tocha.
