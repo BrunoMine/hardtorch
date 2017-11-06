@@ -99,6 +99,10 @@ hardtorch.loop_tocha = function(name, torchname)
 		item:add_wear(hardtorch.registered_fuels[loop.fuel.name].loop_wear)
 		inv:set_stack(loop.fuel.list, loop.fuel.i, item)
 	else
+		-- Aviso de "sem combustivel"
+		if torchname ~= def.fuel[1] then
+			minetest.chat_send_player(player:get_player_name(), "Sem combustivel")
+		end
 		-- Encerra loop
 		hardtorch.apagar_tocha(player, torchname)
 		hardtorch.em_loop[name] = nil
@@ -156,6 +160,7 @@ hardtorch.register_tool = function(torchname, def)
 						return hardtorch.acender_tocha(itemstack, user)
 					end
 				end
+				minetest.chat_send_player(user:get_player_name(), "Sem fonte de calor ou acendedor")
 				return itemstack
 			end
 			return hardtorch.acender_tocha(itemstack, user)

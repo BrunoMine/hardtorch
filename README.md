@@ -1,4 +1,4 @@
-HardTorch v0.5.3
+HardTorch v0.5.4
 ================
 
 [![Baixar](https://img.shields.io/github/tag/BrunoMine/hardtorch.svg?style=flat-square&label=release)](https://github.com/BrunoMine/hardtorch/archive/master.zip)
