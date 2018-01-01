@@ -1,6 +1,6 @@
 --[[
 	Mod HardTorch para Minetest
-	Copyright (C) 2017 BrunoMine (https://github.com/BrunoMine)
+	Copyright (C) 2018 BrunoMine (https://github.com/BrunoMine)
 	
 	Recebeste uma cópia da GNU Lesser General
 	Public License junto com esse software,
@@ -20,7 +20,7 @@ hardtorch.register_fuel = function(name, def)
 	local registro = hardtorch.registered_fuels[name]
 	
 	registro.turns = def.turns
-	registro.time = (def.turns*(12*60*60))/tonumber(minetest.setting_get("time_speed") or 72)
+	registro.time = def.turns * hardtorch.night_time
 	registro.loop_wear = (65535/registro.time)*2
 	
 end

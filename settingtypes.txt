@@ -20,5 +20,12 @@ hardtorch_lamp_light_source (Luminosidade - Lamparina/Oil Lamp) int 13 0
 # Lighter or fire source is needed to light a torch.
 hardtorch_torch_lighter (Acendedor/lighter) bool false
 
+# Tempo fixo (em segundos) que dura uma noite.
+# Isso vai ignorar a verdadeira duração da noite no jogo.
+# Definir 0 para desabilitar.
+# Fixed time (in seconds) that lasts one night.
+# This will ignore the true duration of the night in the game.
+# Set 0 to disable.
+hardtorch_fixed_night_time (Tempo fixo da noite/Fixed night time) int 0
 
 

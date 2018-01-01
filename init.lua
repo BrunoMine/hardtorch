@@ -1,6 +1,6 @@
 --[[
 	Mod HardTorch para Minetest
-	Copyright (C) 2017 BrunoMine (https://github.com/BrunoMine)
+	Copyright (C) 2018 BrunoMine (https://github.com/BrunoMine)
 	
 	Recebeste uma cópia da GNU Lesser General
 	Public License junto com esse software,
@@ -21,6 +21,18 @@ hardtorch.torch_lighter = (minetest.settings:get("hardtorch_torch_lighter") == "
 
 -- Nodes que funcionam como fontes de fogo para acender tochas
 hardtorch.fontes_de_fogo = {}
+
+
+
+-- Tempo fixo de duração de uma noite
+hardtorch.night_time = tonumber(minetest.settings:get("hardtorch_fixed_night_time") or 0)
+if hardtorch.night_time == 0 then
+	local time_speed = tonumber(minetest.setting_get("time_speed") or 72)
+	if time_speed == 0 then
+		time_speed = 72
+	end
+	hardtorch.night_time = (12*60*60)/time_speed
+end
 
 -- Notificador de Inicializador
 local notificar = function(msg)
