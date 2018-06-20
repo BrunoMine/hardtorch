@@ -168,6 +168,16 @@ hardtorch.register_tool = function(torchname, def)
 
 		-- Ao colocar funciona como tocha normal apenas repassando o desgaste
 		on_place = function(itemstack, placer, pointed_thing)
+			-- Verifica nodes evitaveis
+			if pointed_thing.under and hardtorch.evitar_tool_on_place[1] then
+				local nn = minetest.get_node(pointed_thing.under).name
+				for _,n in ipairs(hardtorch.evitar_tool_on_place) do
+					if n == nn then
+						return
+					end
+				end
+			end
+			
 			if itemstack:get_name() ~= torchname then return end
 			
 			if pointed_thing.type ~= "node" then
@@ -252,6 +262,17 @@ hardtorch.register_tool = function(torchname, def)
 
 		-- Ao colocar funciona como tocha normal apenas repassando o desgaste
 		on_place = function(itemstack, placer, pointed_thing)
+		
+			-- Verifica nodes evitaveis
+			if pointed_thing.under and hardtorch.evitar_tool_on_place[1] then
+				local nn = minetest.get_node(pointed_thing.under).name
+				for _,n in ipairs(hardtorch.evitar_tool_on_place) do
+					if n == nn then
+						return
+					end
+				end
+			end
+			
 			if itemstack:get_name() ~= torchname.."_on" then return end
 			
 			if pointed_thing.type ~= "node" then

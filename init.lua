@@ -22,7 +22,12 @@ hardtorch.torch_lighter = (minetest.settings:get("hardtorch_torch_lighter") == "
 -- Nodes que funcionam como fontes de fogo para acender tochas
 hardtorch.fontes_de_fogo = {}
 
-
+-- Nodes para evitar ao colocar tochas
+hardtorch.evitar_tool_on_place = {}
+-- Mod Anvil
+if minetest.get_modpath("anvil") then
+	table.insert(hardtorch.evitar_tool_on_place, "anvil:anvil")
+end
 
 -- Tempo fixo de duração de uma noite
 hardtorch.night_time = tonumber(minetest.settings:get("hardtorch_fixed_night_time") or 0)
