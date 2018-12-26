@@ -237,6 +237,20 @@ hardtorch.register_tool = function(torchname, def)
 		wield_image = "hardtorch_torch_tool_on_mao.png",
 		
 		on_use = function(itemstack, user, pointed_thing)
+					
+			-- Verifica se node acerta tem interação
+			local under = pointed_thing.under
+			if under then
+				local node = minetest.get_node(under)
+				local def = minetest.registered_nodes[node.name]
+				if def and def.on_punch and
+					not (user and user:is_player() and
+					user:get_player_control().sneak) then
+					itemstack = def.on_punch(under, node, user, itemstack,
+						pointed_thing) or itemstack
+				end
+			end
+			
 			if itemstack:get_name() ~= torchname.."_on" then return end
 			
 			-- Remover luz
@@ -244,6 +258,7 @@ hardtorch.register_tool = function(torchname, def)
 			hardtorch.apagar_node_luz(user:get_player_name())
 			hardtorch.remover_luz_hud(user)
 			itemstack:set_name(torchname)
+			
 			return itemstack
 		end,
 
