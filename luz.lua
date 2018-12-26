@@ -19,10 +19,18 @@ hardtorch.get_lpos = function(player)
 	return minetest.deserialize(minetest.serialize(p))
 end
 
+-- Verificar luz
+local check_node_luz = function(pos)
+	local meta = minetest.get_meta(pos)
+	if meta:get_string("nome") == "" then
+		minetest.add_node(pos, {name="hardtorch:luz_0"})
+		minetest.remove_node(pos)
+	end
+end
 
 -- Nodes de luz
 local nodes_luz_tb = {}
-for _,light in ipairs({"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"}) do
+for _,light in ipairs({"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"}) do
 	table.insert(nodes_luz_tb, "hardtorch:luz_"..light)
 	minetest.register_node("hardtorch:luz_"..light, {
 		drawtype = "airlike",
@@ -34,6 +42,11 @@ for _,light in ipairs({"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", 
 		pointable = false,
 		buildable_to = true,
 		drop = {},
+		on_place = function(itemstack, placer, pointed_thing)
+			itemstack:clear()
+			minetest.after(1, check_node_luz, pointed_thing.above)
+			return itemstack
+		end,
 		on_timer = function(pos, elapsed)
 			local meta = minetest.get_meta(pos)
 			-- Verifica se jogador ainda tem luz no local
