@@ -33,7 +33,7 @@ for _,light in ipairs({"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", 
 		light_source = tonumber(light),
 		pointable = false,
 		buildable_to = true,
-		drops = {},
+		drop = {},
 		on_timer = function(pos, elapsed)
 			local meta = minetest.get_meta(pos)
 			-- Verifica se jogador ainda tem luz no local
@@ -42,6 +42,10 @@ for _,light in ipairs({"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", 
 			end
 			-- remove bloco
 			minetest.dig_node(pos)
+		end,
+		on_drop = function(itemstack, dropper, pos)
+			itemstack:clear()
+			return itemstack
 		end,
 	})
 end
