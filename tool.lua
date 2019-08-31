@@ -19,7 +19,10 @@ hardtorch.acender_tocha = function(itemstack, player)
 	
 	-- Verifica se ja esta acessa (evitar loop duplo)
 	if not hardtorch.em_loop[name] then 
-		hardtorch.em_loop[name] = {lpos=hardtorch.get_lpos(player)}
+		hardtorch.em_loop[name] = {
+			lpos = hardtorch.get_lpos(player),
+			torchname = torchname,
+		}
 		-- Adiciona luz no hud
 		hardtorch.adicionar_luz_hud(player, torchname)
 		-- Inicia loop de tocha (atraso para dar tempo de atualizar item no inventario)
@@ -39,6 +42,10 @@ hardtorch.apagar_tocha = function(player, torchname)
 	-- Remover luz do hud
 	hardtorch.remover_luz_hud(player)
 	
+	local loop = hardtorch.em_loop[player:get_player_name()]
+	
+	torchname = torchname or loop.torchname
+	
 	-- Pega a tocha
 	local list, i, itemstack = hardtorch.find_and_get_item(player, torchname.."_on")
 	if list then
@@ -56,7 +63,7 @@ hardtorch.loop_tocha = function(name, torchname)
 	if not hardtorch.em_loop[name] then return end
 	-- Verifica jogador
 	local player = minetest.get_player_by_name(name)
-	if not player then return end
+	if not player then end
 	
 	local def = hardtorch.registered_torchs[torchname]
 	local loop = hardtorch.em_loop[name]
@@ -365,4 +372,13 @@ hardtorch.register_tool = function(torchname, def)
 	})
 	
 end
+
+-- Apaga tocha da mão quando o jogador desconecta
+minetest.register_on_leaveplayer(function(player)
+	local name = player:get_player_name()
+	if hardtorch.em_loop[name] then
+		hardtorch.apagar_tocha(player, hardtorch.em_loop[name].torchname)
+		hardtorch.em_loop[name] = nil
+	end
+end)
 
