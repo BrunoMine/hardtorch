@@ -60,9 +60,10 @@ dofile(modpath.."/node.lua")
 dofile(modpath.."/lighter.lua")
 dofile(modpath.."/fuel.lua")
 dofile(modpath.."/api.lua")
-dofile(modpath.."/torch.lua")
 dofile(modpath.."/oil.lua")
-dofile(modpath.."/lamp.lua")
+dofile(modpath.."/torchs/torch.lua")
+dofile(modpath.."/torchs/lamp.lua")
+dofile(modpath.."/torchs/candle.lua")
 notificar("[OK]!")
 
 
