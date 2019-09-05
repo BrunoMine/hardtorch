@@ -1,6 +1,6 @@
 --[[
 	Mod HardTorch para Minetest
-	Copyright (C) 2017 BrunoMine (https://github.com/BrunoMine)
+	Copyright (C) 2019 BrunoMine (https://github.com/BrunoMine)
 	
 	Recebeste uma cópia da GNU Lesser General
 	Public License junto com esse software,
@@ -10,12 +10,11 @@
 	
   ]]
 
-
-
 -- Pegar coordenada de luz
 hardtorch.get_lpos = function(player)
 	local p = minetest.deserialize(minetest.serialize(player:getpos()))
 	p.y = p.y+1
+	
 	return minetest.deserialize(minetest.serialize(p))
 end
 
@@ -50,11 +49,13 @@ for _,light in ipairs({"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "
 		on_timer = function(pos, elapsed)
 			local meta = minetest.get_meta(pos)
 			-- Verifica se jogador ainda tem luz no local
-			if hardtorch.em_loop[meta:get_string("nome")] then
+			if hardtorch.em_loop[meta:get_string("nome")] 
+				and vector.equals(hardtorch.em_loop[meta:get_string("nome")].lpos, pos) == true
+			then
 				return true -- Repete loop do timer
 			end
 			-- remove bloco
-			minetest.dig_node(pos)
+			minetest.remove_node(pos)
 		end,
 		on_drop = function(itemstack, dropper, pos)
 			itemstack:clear()
@@ -91,7 +92,7 @@ hardtorch.loop_luz = function(name, torchname)
 		minetest.get_node_timer(lpa):start(1)
 		
 		-- Salva novo local de luz atual do jogador
-		hardtorch.em_loop[name].lpos = minetest.deserialize(minetest.serialize(lpa))
+		hardtorch.em_loop[name].lpos = vector.round(lpa)
 		
 	end
 	minetest.after(0.45, hardtorch.loop_luz, name, torchname)
