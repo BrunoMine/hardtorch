@@ -6,20 +6,20 @@
 	Public License junto com esse software,
 	se não, veja em <http://www.gnu.org/licenses/>. 
 	
-	Registro de Candieiro (candle) do mod xdecor
+	Registro de Vela (candle) do mod xdecor
   ]]
 
 if minetest.registered_nodes["xdecor:candle"] == nil then return end
 
 -- Luminosidade da lamparina
-local candle_light_source = hardtorch.check_light_number(minetest.settings:get("hardtorch_candle_light_source") or 7) 
+local candle_light_source = hardtorch.check_light_number(minetest.settings:get("hardtorch_xdecor_candle_light_source") or 7) 
 
 -- Noites de durabilidade da tocha
-local candle_nights = math.abs(tonumber(minetest.settings:get("hardtorch_candle_nights") or 0.8)) 
+local candle_nights = math.abs(tonumber(minetest.settings:get("hardtorch_xdecor_candle_nights") or 0.8)) 
 if candle_nights <= 0 then candle_nights = 0.8 end
 
 
--- Ajuste no candieiro padrão
+-- Ajuste na vela (candle) do mod xdecor
 do
 	minetest.override_item("xdecor:candle", {
 		-- Muda imagem para jogador saber que tem que acendela

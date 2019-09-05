@@ -1,4 +1,4 @@
-HardTorch v0.5.5
+HardTorch v0.5.6
 ================
 
 [![Baixar](https://img.shields.io/github/tag/BrunoMine/hardtorch.svg?style=flat-square&label=release)](https://github.com/BrunoMine/hardtorch/archive/master.zip)
@@ -11,7 +11,7 @@ Este mod vai tornar as tochas muito mais realistas.
 _This mod will make torches much more realistic._
 
 ## Requisitos _(Requirements)_
-* Minetest 0.4.16
+* Minetest 0.4.16 (ou superior|_or later_)
 * Mod default
 * Mod fire
 

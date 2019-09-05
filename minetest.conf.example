@@ -28,3 +28,11 @@
 # This will ignore the true duration of the night in the game.
 # Set 0 to disable.
 #hardtorch_night_time = 0
+
+# Numero de noites que uma Vela perdura acesa.
+# Number of nights a Candle remains lit.
+#hardtorch_xdecor_candle_nights = 0.8
+
+# Luminosidade da Vela Acesa (limite: 14)
+# Light source of Candle Lit (limit: 14)
+#hardtorch_xdecor_candle_light_source = 7

@@ -63,7 +63,7 @@ dofile(modpath.."/api.lua")
 dofile(modpath.."/oil.lua")
 dofile(modpath.."/torchs/torch.lua")
 dofile(modpath.."/torchs/lamp.lua")
-dofile(modpath.."/torchs/candle.lua")
+dofile(modpath.."/torchs/xdecor_candle.lua")
 notificar("[OK]!")
 
 
