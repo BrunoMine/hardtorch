@@ -1,14 +1,18 @@
 --[[
 	Mod HardTorch para Minetest
 	Copyright (C) 2017 BrunoMine (https://github.com/BrunoMine)
-	
+
 	Recebeste uma cópia da GNU Lesser General
 	Public License junto com esse software,
-	se não, veja em <http://www.gnu.org/licenses/>. 
-	
+	se não, veja em <http://www.gnu.org/licenses/>.
+
 	Registro de Lamparina
   ]]
 
+
+-- Used for localization
+
+local S = minetest.get_translator("hardtorch")
 
 -- Luminosidade da lamparina
 local lamp_light_source = hardtorch.check_light_number(minetest.settings:get("hardtorch_lamp_light_source") or 13)
@@ -62,7 +66,7 @@ local node_nodebox = {
 
 -- Register node de lamparina
 local def_lamp = minetest.serialize({
-	description = "Oil Lamp",
+	description = S("Oil Lamp"),
 	stack_max = 1,
 	tiles = {
 		"hardtorch_lamp_wield_cima.png",
@@ -89,22 +93,22 @@ local def_lamp = minetest.serialize({
 minetest.register_node("hardtorch:lamp", minetest.deserialize(def_lamp))
 minetest.override_item("hardtorch:lamp", {
 	on_place = function(itemstack, placer, pointed_thing)
-		
+
 		if pointed_thing.type ~= "node" then
 			return itemstack
 		end
-		
+
 		itemstack:set_name("hardtorch:lamp_node")
 
 		if not minetest.item_place(itemstack, placer, pointed_thing) then
 			return itemstack
 		end
-		
+
 		-- Remove item do inventario
 		itemstack:take_item()
 
 		return itemstack
-		
+
 	end,
 })
 
@@ -112,7 +116,7 @@ minetest.override_item("hardtorch:lamp", {
 -- Node-ferramenta ativo
 minetest.register_node("hardtorch:lamp_on", minetest.deserialize(def_lamp))
 minetest.override_item("hardtorch:lamp_on", {
-	description = "Oil Lamp Lit",
+	description = S("Oil Lamp Lit"),
 	paramtype = "light",
 	paramtype = nil,
 	groups = {choppy=2, dig_immediate=3, flammable=1, attached_node=1, torch=1, not_in_creative_inventory = 1},
@@ -126,7 +130,7 @@ minetest.override_item("hardtorch:lamp_on", {
 	},
 })
 
--- Node 
+-- Node
 minetest.register_node("hardtorch:lamp_node", minetest.deserialize(def_lamp))
 minetest.override_item("hardtorch:lamp_node", {
 	drop = "hardtorch:lamp",

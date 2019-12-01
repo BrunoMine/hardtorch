@@ -1,19 +1,24 @@
 --[[
 	Mod HardTorch para Minetest
 	Copyright (C) 2018 BrunoMine (https://github.com/BrunoMine)
-	
+
 	Recebeste uma cópia da GNU Lesser General
 	Public License junto com esse software,
-	se não, veja em <http://www.gnu.org/licenses/>. 
-	
+	se não, veja em <http://www.gnu.org/licenses/>.
+
 	Registro de Tochas padrao
   ]]
 
+
+-- Used for localization
+
+local S = minetest.get_translator("hardtorch")
+
 -- Luminosidade da lamparina
-local torch_light_source = hardtorch.check_light_number(minetest.settings:get("hardtorch_torch_light_source") or 11) 
+local torch_light_source = hardtorch.check_light_number(minetest.settings:get("hardtorch_torch_light_source") or 11)
 
 -- Noites de durabilidade da tocha
-local torch_nights = math.abs(tonumber(minetest.settings:get("hardtorch_torch_nights") or 0.1)) 
+local torch_nights = math.abs(tonumber(minetest.settings:get("hardtorch_torch_nights") or 0.1))
 if torch_nights <= 0 then torch_nights = 0.1 end
 
 
@@ -35,7 +40,7 @@ hardtorch.register_fuel("hardtorch:torch_on", {
 
 -- Registrar ferramentas
 minetest.register_tool("hardtorch:torch", {
-	description = "Torch (used)",
+	description = S("Torch (used)"),
 	inventory_image = "hardtorch_torch_tool_off.png",
 	wield_image = "hardtorch_torch_tool_off.png",
 	groups = {not_in_creative_inventory = 1},
@@ -53,8 +58,8 @@ hardtorch.register_torch("hardtorch:torch", {
 	light_source = minetest.registered_nodes["default:torch"].light_source,
 	fuel = {"hardtorch:torch_on"},
 	nodes = {
-		node = "default:torch", 
-		node_ceiling = "default:torch_ceiling", 
+		node = "default:torch",
+		node_ceiling = "default:torch_ceiling",
 		node_wall = "default:torch_wall"
 	},
 	sounds = {
