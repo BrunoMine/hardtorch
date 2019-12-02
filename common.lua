@@ -1,18 +1,17 @@
 --[[
-	Mod HardTorch para Minetest
-	Copyright (C) 2017 BrunoMine (https://github.com/BrunoMine)
+	Mod HardTorch for Minetest
+	Copyright (C) 2019 BrunoMine (https://github.com/BrunoMine)
 	
-	Recebeste uma cópia da GNU Lesser General
-	Public License junto com esse software,
-	se não, veja em <http://www.gnu.org/licenses/>. 
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <https://www.gnu.org/licenses/>5.
 	
-	Metodos comuns
-	
+	Common Methods
   ]]
 
 
+-- Play turn on torch sound
 -- Tocar som de acender tocha
-hardtorch.som_acender = function(pos, torchname)
+hardtorch.turnon_sound = function(pos, torchname)
 	if hardtorch.registered_torchs[torchname].sounds.turn_on then
 		minetest.sound_play(hardtorch.registered_torchs[torchname].sounds.turn_on.name, {
 			pos = pos,
@@ -23,8 +22,9 @@ hardtorch.som_acender = function(pos, torchname)
 end
 
 
+-- Play turn off torch sound
 -- Tocar som de apagar tocha
-hardtorch.som_apagar = function(pos, torchname)
+hardtorch.turnoff_sound = function(pos, torchname)
 	if hardtorch.registered_torchs[torchname].sounds.turn_off then
 		minetest.sound_play(hardtorch.registered_torchs[torchname].sounds.turn_off.name, {
 			pos = pos,
@@ -35,8 +35,9 @@ hardtorch.som_apagar = function(pos, torchname)
 end
 
 
+-- Play turn off torch by water sound
 -- Tocar som de apagar tocha pela agua
-hardtorch.som_apagar_por_agua = function(pos, torchname)
+hardtorch.turnoff_by_water_sound = function(pos, torchname)
 	if hardtorch.registered_torchs[torchname].sounds.water_turn_off then
 		minetest.sound_play(hardtorch.registered_torchs[torchname].sounds.water_turn_off.name, {
 			pos = pos,
@@ -47,12 +48,14 @@ hardtorch.som_apagar_por_agua = function(pos, torchname)
 end
 
 
+-- Calculate remaining time of a node
 -- Calcular tempo restante de um node
 hardtorch.get_node_timeout = function(pos)
 	local meta = minetest.get_meta(pos)
 	local torchname = hardtorch.registered_nodes[minetest.get_node(pos).name]
 	local fuel = meta:get_string("hardtorch_fuel")
-	-- Verifica combustivel
+	
+	-- Check fuel
 	if fuel == "" then fuel = hardtorch.registered_torchs[torchname].fuel[1] end
 	local wear = meta:get_int("hardtorch_wear")
 	local fulltime = hardtorch.registered_fuels[fuel].time
@@ -60,12 +63,15 @@ hardtorch.get_node_timeout = function(pos)
 	return fulltime-math.floor(time)
 end
 
+
+-- Calculate wear on a node
 -- Calcular desgaste de um node
 hardtorch.get_node_wear = function(pos)
 	local meta = minetest.get_meta(pos)
 	local fuel = meta:get_string("hardtorch_fuel")
 	local torchname = hardtorch.registered_nodes[minetest.get_node(pos).name]
-	-- Verifica combustivel
+	
+	-- Check fuel
 	if fuel == "" then fuel = hardtorch.registered_torchs[torchname].fuel[1] end
 	local fulltime = hardtorch.registered_fuels[fuel].time
 	local timer = minetest.get_node_timer(pos)
@@ -75,8 +81,8 @@ hardtorch.get_node_wear = function(pos)
 end
 
 
--- Atualizar um itemstack no inventario do jogador 
--- (metodo padrão set_stack() não consegue atualizar com stack vazio)
+-- Update itemstack (default method 'set_stack' cannot update with an empty stack)
+-- Atualiza itemstack (metodo padrão 'set_stack' não consegue atualizar com stack vazio)
 hardtorch.update_inv = function(player, list, i, stack)
 	local inv = player:get_inventory()
 	local itemlist = inv:get_list(list)
@@ -85,7 +91,8 @@ hardtorch.update_inv = function(player, list, i, stack)
 end
 
 
--- Verificar impedimento no local proximo da tocha
+-- Check nodes near torch
+-- Verificar blocos perto da tocha
 hardtorch.check_torch_area = function(pos)
 	for _,p in ipairs({
 		{x=pos.x+1, y=pos.y, z=pos.z},
@@ -103,13 +110,16 @@ hardtorch.check_torch_area = function(pos)
 end
 
 
--- Encontrar tocha acessa no inventario
+-- Find and get item on inventory
+-- Busca e pega item no inventario
 hardtorch.find_and_get_item = function(player, itemname)
 	local inv = player:get_inventory()
-	-- Verifica cada um dos itens
+	
+	-- Check each list name
 	for list_name,list in pairs(inv:get_lists()) do
+		
+		-- Check each item
 		for i,item in ipairs(list) do
-			-- Troca pela tocha apagada
 			if item:get_name() == itemname then
 				return list_name, i, item
 			end
@@ -118,10 +128,12 @@ hardtorch.find_and_get_item = function(player, itemname)
 end
 
 
--- Encontrar tocha acessa no inventario
+-- Find item on inventory
+-- Busca item no inventario
 hardtorch.find_item = function(player, itemname)
 	local inv = player:get_inventory()
-	-- Verifica em todas listas de inventario
+	
+	-- Check each list name
 	for listname,list in pairs(inv:get_lists()) do
 		if inv:contains_item(listname, itemname) then
 			return true
@@ -131,7 +143,8 @@ hardtorch.find_item = function(player, itemname)
 end
 
 
--- Pegar combustivel no inventario de um jogador
+-- Get torch fuel from inventory
+-- Pegar combustivel de tocha no inventario
 hardtorch.get_fuel_stack = function(player, torchname)
 	for _,fuelname in ipairs(hardtorch.registered_torchs[torchname].fuel) do
 		if hardtorch.find_item(player, fuelname) then
@@ -141,13 +154,14 @@ hardtorch.get_fuel_stack = function(player, torchname)
 end
 
 
+-- HUD element default light
 -- Elemento HUD luz padrao
 hardtorch.hud_element = {
 	hud_elem_type = "image",
 	position = {x=0.1, y=1.1},
-	name = "hardtorch_luz",
+	name = "hardtorch_light",
 	scale = {x=4, y=4},
-	text = "hardtorch_luz.png",
+	text = "hardtorch_light.png",
 	number = 2,
 	item = 3,
 	direction = 0,
@@ -157,22 +171,25 @@ hardtorch.hud_element = {
 }
 
 
--- Adicionar luz do hud
-hardtorch.adicionar_luz_hud = function(player, torchname)
-	hardtorch.em_loop[player:get_player_name()].hud_id = player:hud_add(hardtorch.hud_element)
+-- Add light on HUD
+-- Adicionar luz no HUD
+hardtorch.add_light_hud = function(player, torchname)
+	hardtorch.in_loop[player:get_player_name()].hud_id = player:hud_add(hardtorch.hud_element)
 end
 
 
--- Remover luz do hud
-hardtorch.remover_luz_hud = function(player)
+-- Remove light from HUD
+-- Remover luz do HUD
+hardtorch.remove_light_hud = function(player)
 	local name = player:get_player_name()
-	if hardtorch.em_loop[name] and hardtorch.em_loop[name].hud_id then
-		player:hud_remove(hardtorch.em_loop[name].hud_id)
+	if hardtorch.in_loop[name] and hardtorch.in_loop[name].hud_id then
+		player:hud_remove(hardtorch.in_loop[name].hud_id)
 	end
 end
 
 
--- Verifica se um numero representa luz e corrige se precisar
+-- Check and correct light power
+-- Verifica e corrige potencia de luz
 hardtorch.check_light_number = function(n)
 	if not n then
 		return 1

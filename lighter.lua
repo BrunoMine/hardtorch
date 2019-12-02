@@ -1,18 +1,18 @@
 --[[
-	Mod HardTorch para Minetest
-	Copyright (C) 2017 BrunoMine (https://github.com/BrunoMine)
+	Mod HardTorch for Minetest
+	Copyright (C) 2019 BrunoMine (https://github.com/BrunoMine)
 	
-	Recebeste uma cópia da GNU Lesser General
-	Public License junto com esse software,
-	se não, veja em <http://www.gnu.org/licenses/>. 
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <https://www.gnu.org/licenses/>5.
 	
-	Acendedores
-	
+	Lighter
   ]]
 
+-- Global Table
 -- Tabela global
 hardtorch.registered_lighters = {}
 
+-- Register lighter
 -- Registrar Acendedor
 hardtorch.register_lighter = function(name, def)
 	hardtorch.registered_lighters[name] = def

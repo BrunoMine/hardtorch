@@ -1,70 +1,76 @@
 --[[
-	Mod HardTorch para Minetest
-	Copyright (C) 2017 BrunoMine (https://github.com/BrunoMine)
+	Mod HardTorch for Minetest
+	Copyright (C) 2019 BrunoMine (https://github.com/BrunoMine)
 	
-	Recebeste uma cópia da GNU Lesser General
-	Public License junto com esse software,
-	se não, veja em <http://www.gnu.org/licenses/>. 
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <https://www.gnu.org/licenses/>5.
 	
 	Nodes
   ]]
 
+-- Registered nodes
 -- Nodes registrados
 hardtorch.registered_nodes = {}
 
-
+-- Register torch node
 -- Registrar Node de tocha
 hardtorch.register_node = function(torchname, def)
 	
 	for nt,nn in pairs(def.nodes) do
 		hardtorch.registered_nodes[nn] = torchname
 		if def.nodes.fire_source ~= false then
-			hardtorch.fontes_de_fogo[nn] = true
+			hardtorch.fire_sources[nn] = true
 		end
 	end
 	
-	-- Recuperar o desgaste apos coletado
+	-- Take torch and fuel with wear
+	-- Pega tocha e combustivel com desgaste
 	local on_dig = function(pos, node, digger)
 		if not hardtorch.registered_nodes[node.name] then return end
 		local meta = minetest.get_meta(pos)
 		local inv = digger:get_inventory()
 	
-		-- Calcula desgaste
+		-- Calculate wear
 		local wear = hardtorch.get_node_wear(pos)
 		local itemstack = {name=torchname, count=1}
 		
-		-- Caso o combustivel seja o proprio item, repassa desgaste
+		-- If torch is the fuel
+		-- Se a tocha é o próprio cosbustivel
+		local torch_is_fuel = false
 		if torchname.."_on" == meta:get_string("hardtorch_fuel") then
 			itemstack.wear = wear
+			torch_is_fuel = true
 		end
 		
-		-- Torna acessa caso ainda nao tenha nenhuma (sem loop)
-		if not hardtorch.em_loop[digger:get_player_name()] then
+		-- Keep torch lit if possible
+		-- Deixa tocha acesa se possivel
+		if not hardtorch.in_loop[digger:get_player_name()] then
 			itemstack.name = torchname.."_on"
 		end
 		
+		-- Checks if torch fits in inventory
 		-- Verifica se tocha cabe no inventario
 		if inv:room_for_item("main", itemstack) then
-						
-			-- Coloca no inventario
+			
 			inv:add_item("main", itemstack)
 			
+			-- Lights with loop if added previously lit
 			-- Acende com loop caso adicinou acesa anteriormente
-			if not hardtorch.em_loop[digger:get_player_name()] then
+			if not hardtorch.in_loop[digger:get_player_name()] then
 				local list, i, itemstack = hardtorch.find_and_get_item(digger, torchname.."_on")
 				itemstack:set_name(torchname)
-				itemstack = hardtorch.acender_tocha(itemstack, digger)
+				itemstack = hardtorch.turnon_torch(itemstack, digger)
 				inv:set_stack(list, i, itemstack)
 			end
 			
-			
 		else
-			-- Dropa no local
+			-- Drop torch
 			minetest.add_item(pos, itemstack)
 		end
 		
+		-- Checks if fuel fits in inventory
 		-- Verifica se combustivel cabe no inventario
-		if torchname.."_on" ~= meta:get_string("hardtorch_fuel") then
+		if torch_is_fuel == false then 
 			local fuelstack = {name=meta:get_string("hardtorch_fuel"), count=1, wear=wear}
 			
 			if inv:room_for_item("main", fuelstack) then
@@ -72,72 +78,89 @@ hardtorch.register_node = function(torchname, def)
 				-- Coloca no inventario
 				inv:add_item("main", fuelstack)
 			else
-				-- Dropa no local
+				-- Drop fuel
 				minetest.add_item(pos, fuelstack)
 			end
 		end
-	
+		
 		minetest.remove_node(pos)
 	end
-
 	
-	-- Adiciona uso para node de tochas ser substituindo por ferramenta de tocha (que será acessa)
+	
+	-- Replaces craftitem/node in a tool (to be lit)
+	-- Troca craftitem/nó em ferramenta (para ser acesa)
 	local on_use = function(itemstack, player, pointed_thing)
 		if not hardtorch.registered_nodes[itemstack:get_name()] then return end
-		local sobra = itemstack:get_count() - 1
+		local leftover = itemstack:get_count() - 1
 		local inv = player:get_inventory()
 		
+		-- Localize the item on inventory
 		-- Localiza o item no iventario
 		local list, i = player:get_wield_list(), player:get_wield_index()
 		local itemstack2 = inv:get_stack(list, i)
 		if itemstack:to_string() ~= itemstack2:to_string() then
 			return
 		end
-
-		-- Troca o item pela ferramenta
+		
+		-- Replace item
 		itemstack:replace({name=torchname, count=1, wear=0, metadata=""})
 		inv:set_stack(list, i, itemstack)
-
+		
+		-- If has left over, try put on inventory or drop (with audible and textual warning)
 		-- Caso tenha sobra tenta colocar no inventario, ou joga no chão (com aviso sonoro e textual)
-		if sobra > 0 then
-			if inv:room_for_item("main", def.nodes.node.." "..sobra) then
-				-- Coloca no inventario
-				inv:add_item("main", def.nodes.node.." "..sobra)
+		if leftover > 0 then
+		
+			-- Put in inventory
+			if inv:room_for_item("main", def.nodes.node.." "..leftover) then
+				inv:add_item("main", def.nodes.node.." "..leftover)
+				
+			-- Drop
 			else
-				-- Coloca a tocha no inventario para poder dropa-la
-				inv:set_stack(list, i, def.nodes.node.." "..sobra)
+				-- Set torchs in inveotory to drop
+				-- Coloca a tocha no inventario para dropar
+				inv:set_stack(list, i, def.nodes.node.." "..leftover)
 				minetest.item_drop(inv:get_stack(list, i), player, player:getpos())
-				-- Recoloca tocha
+				
+				-- Restore to the torch tool
+				-- Restaura para a ferramenta tocha
 				inv:set_stack(list, i, itemstack)
 			end
 		end
-	
-		itemstack:set_name(torchname) -- restaura nome da tocha	
+		
+		-- Restore torch name
+		-- Restaura nome da tocha	
+		itemstack:set_name(torchname) 
 		
 		return itemstack
 	end
 
-
-	-- Atualiza as tocha apos colocar
+	
+	-- Update the torch after place it
+	-- Atualiza a tocha apos coloca-la
 	local after_place_node = function(pos, placer, itemstack, pointed_thing)
 		if not hardtorch.registered_nodes[minetest.get_node(pos).name] then return end
 		
-		-- Certifica de que iniciou contagem
+		-- Starts wear time count
+		-- Inicia contagem de tempo de desgaste
 		local timer = minetest.get_node_timer(pos)
 		if timer:is_started() ~= true then
+			
+			-- Set initial wear if necessary
 			-- Define desgaste inicial caso necessario
 			local meta = minetest.get_meta(pos)
 			if meta:get_string("hardtorch_fuel") == "" then
 				meta:set_string("hardtorch_fuel", def.fuel[1])
 				meta:set_int("hardtorch_wear", 0)
 			end
-		
+			
+			-- Starts counting to end fire according to set wear 
 			-- Inicia contagem para acabar fogo de acordo com desgaste definido
 			timer:start(hardtorch.get_node_timeout(pos))
 		end
 	
 	end
-
+	
+	-- Remove torch when fire end
 	-- Remove tocha quando fogo acabar
 	local on_timer = function(pos, elapsed)
 		if not hardtorch.registered_nodes[minetest.get_node(pos).name] then return end
@@ -166,6 +189,7 @@ hardtorch.register_node = function(torchname, def)
 		on_timer=on_timer,
 	}
 	
+	-- Prevent normal placement in special cases
 	-- Impedir colocação normal em casos especiais
 	if hardtorch.torch_lighter then
 		node_torch_def.on_place = function(itemstack, placer, pointed_thing)
@@ -173,15 +197,16 @@ hardtorch.register_node = function(torchname, def)
 		end
 	end
 	
-	-- Atualiza tochas com novas funcões de chamadas
+	-- Upgrades torches with new calling features
+	-- Atualiza tochas com novas funções de chamadas
 	minetest.override_item(def.nodes.node, node_torch_def)
 	minetest.override_item(def.nodes.node_ceiling or def.nodes.node, node_torch_def)
 	minetest.override_item(def.nodes.node_wall or def.nodes.node, node_torch_def)
 
-
+	-- Turn off torches in contact with water
 	-- Apagar tochas em contato com agua
 	minetest.register_abm({
-		label = "Esfriamento de tochas molhadas",
+		label = "Turn off wet torch",
 		nodenames = {def.nodes.node, def.nodes.node_ceiling, def.nodes.node_wall},
 		neighbors = {"group:water"},
 		interval = 1,
@@ -190,7 +215,7 @@ hardtorch.register_node = function(torchname, def)
 		action = function(pos, node)
 			if hardtorch.check_torch_area(pos) == false then
 				local wear = hardtorch.get_node_wear(pos)
-				hardtorch.som_apagar_por_agua(pos, torchname)
+				hardtorch.turnoff_by_water_sound(pos, torchname)
 				minetest.remove_node(pos)
 				minetest.add_item(pos, def.drop_on_water or {name=torchname, wear=wear})
 			end

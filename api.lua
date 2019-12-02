@@ -1,36 +1,40 @@
 --[[
-	Mod HardTorch para Minetest
-	Copyright (C) 2017 BrunoMine (https://github.com/BrunoMine)
+	Mod HardTorch for Minetest
+	Copyright (C) 2019 BrunoMine (https://github.com/BrunoMine)
 	
-	Recebeste uma cópia da GNU Lesser General
-	Public License junto com esse software,
-	se não, veja em <http://www.gnu.org/licenses/>. 
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <https://www.gnu.org/licenses/>5.
 	
 	API
-	
   ]]
 
+-- Global Table
 -- Tabela Global
 hardtorch.registered_torchs = {}
 
+-- Register torch
 -- Registrar tocha
 hardtorch.register_torch = function(name, def)
 	
 	hardtorch.registered_torchs[name] = def
 	
+	-- Consolidate data
 	-- Consolidar dados
 	hardtorch.registered_torchs[name].sounds = def.sounds or {}
 	
-	-- Cria as ferramentas
+	-- Register tools (off and on)
+	-- Registrar ferramentas (apagada e acesa)
 	hardtorch.register_tool(name, def)
 	
+	-- Register node
 	-- Registrar node
 	hardtorch.register_node(name, def)
 	
-	-- Certifica que jogador que acabou de entrar esteja com tocha acessa, caso contrario apaga ela
+	-- Turn off the torch on joining the server
+	-- Desligue a tocha ao ingressar no servidor
 	minetest.register_on_joinplayer(function(player)
 		if hardtorch.find_item(player, name.."_on") == true then
-			hardtorch.apagar_tocha(player, name)
+			hardtorch.turnoff_torch(player, name)
 		end
 	end)
 end

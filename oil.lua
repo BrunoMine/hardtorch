@@ -1,38 +1,37 @@
 --[[
-	Mod HardTorch para Minetest
-	Copyright (C) 2017 BrunoMine (https://github.com/BrunoMine)
-
-	Recebeste uma cópia da GNU Lesser General
-	Public License junto com esse software,
-	se não, veja em <http://www.gnu.org/licenses/>.
-
-	Registro de Oleo
+	Mod HardTorch for Minetest
+	Copyright (C) 2019 BrunoMine (https://github.com/BrunoMine)
+	
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <https://www.gnu.org/licenses/>5.
+	
+	Oil
   ]]
 
 
 -- Used for localization
-
 local S = minetest.get_translator("hardtorch")
 
--- Noites de durabilidade da tocha da lamparina
+-- Durability of oil (in nights)
+-- Durabilidade do oleo (em noites)
 local oil_nights = math.abs(tonumber(minetest.settings:get("hardtorch_oil_nights") or 1.2))
 if oil_nights <= 0 then oil_nights = 1.2 end
 
-
--- Oleo de lamparina
+-- Oil
+-- Oleo
 minetest.register_tool("hardtorch:oil", {
 	description = S("Oil"),
 	inventory_image = "hardtorch_oil.png",
 
 })
 
-
+-- Register fuel
 -- Registrar combustivel
 hardtorch.register_fuel("hardtorch:oil", {
 	turns = oil_nights,
 })
 
-
+-- Oil recipes
 -- Receitas para oleo
 minetest.register_craft({
 	output = 'hardtorch:oil',

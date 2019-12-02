@@ -1,32 +1,31 @@
 --[[
-	Mod HardTorch para Minetest
+	Mod HardTorch for Minetest
 	Copyright (C) 2019 BrunoMine (https://github.com/BrunoMine)
-
-	Recebeste uma cópia da GNU Lesser General
-	Public License junto com esse software,
-	se não, veja em <http://www.gnu.org/licenses/>.
-
-	Registro de Vela (candle) do mod xdecor
+	
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <https://www.gnu.org/licenses/>5.
+	
+	Candle from xdecor mod
   ]]
 
 if minetest.registered_nodes["xdecor:candle"] == nil then return end
 
--- Used for localization
 
+-- Used for localization
 local S = minetest.get_translator("hardtorch")
 
--- Luminosidade da lamparina
+-- Candle light
 local candle_light_source = hardtorch.check_light_number(minetest.settings:get("hardtorch_xdecor_candle_light_source") or 7)
 
--- Noites de durabilidade da tocha
+-- Candle durability (in nights)
 local candle_nights = math.abs(tonumber(minetest.settings:get("hardtorch_xdecor_candle_nights") or 0.8))
 if candle_nights <= 0 then candle_nights = 0.8 end
 
 
--- Ajuste na vela (candle) do mod xdecor
+-- Candle adjustment
 do
 	minetest.override_item("xdecor:candle", {
-		-- Muda imagem para jogador saber que tem que acendela
+		-- Change image to player know that need to light it
 		inventory_image = "xdecor_candle_wield.png",
 		wield_image = "xdecor_candle_wield.png",
 		light_source = candle_light_source
@@ -34,12 +33,12 @@ do
 end
 
 
--- Registra a tocha acessa como um combustivel
+-- Register the lit torch like fuel
 hardtorch.register_fuel("hardtorch:xdecor_candle_on", {
 	turns = candle_nights,
 })
 
--- Registrar ferramentas
+-- Register tool
 minetest.register_tool("hardtorch:xdecor_candle", {
 	description = S("Candle (used)"),
 	inventory_image = "xdecor_candle_wield.png",
@@ -47,14 +46,14 @@ minetest.register_tool("hardtorch:xdecor_candle", {
 	groups = {not_in_creative_inventory = 1},
 })
 
--- Versao acessa da ferramenta
+-- Lit version tool
 minetest.register_tool("hardtorch:xdecor_candle_on", {
 	inventory_image = "xdecor_candle_inv.png",
 	wield_image = "xdecor_candle_inv.png",
 	groups = {not_in_creative_inventory = 1},
 })
 
--- Registrar tocha
+-- Register Candle
 hardtorch.register_torch("hardtorch:xdecor_candle", {
 	light_source = minetest.registered_nodes["xdecor:candle"].light_source,
 	fuel = {"hardtorch:xdecor_candle_on"},

@@ -1,99 +1,119 @@
 --[[
-	Mod HardTorch para Minetest
-	Copyright (C) 2018 BrunoMine (https://github.com/BrunoMine)
-
-	Recebeste uma cópia da GNU Lesser General
-	Public License junto com esse software,
-	se não, veja em <http://www.gnu.org/licenses/>.
-
-	Ferramentas
-
+	Mod HardTorch for Minetest
+	Copyright (C) 2019 BrunoMine (https://github.com/BrunoMine)
+	
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <https://www.gnu.org/licenses/>5.
+	
+	Tool
   ]]
 
 
 -- Used for localization
-
 local S = minetest.get_translator("hardtorch")
 
+
+-- Turn on torch
 -- Acender tocha
-hardtorch.acender_tocha = function(itemstack, player)
+hardtorch.turnon_torch = function(itemstack, player)
 	local name = player:get_player_name()
 	local torchname = itemstack:get_name()
 	itemstack:set_name(torchname.."_on")
 
-	-- Verifica se ja esta acessa (evitar loop duplo)
-	if not hardtorch.em_loop[name] then
-		hardtorch.em_loop[name] = {
+	-- Check if it is already lit (avoid double loop)
+	-- Verifica se ja esta acesa (evitar loop duplo)
+	if not hardtorch.in_loop[name] then
+		hardtorch.in_loop[name] = {
 			lpos = hardtorch.get_lpos(player),
 			torchname = torchname,
 		}
-		-- Adiciona luz no hud
-		hardtorch.adicionar_luz_hud(player, torchname)
+		
+		-- Add HUD element
+		hardtorch.add_light_hud(player, torchname)
+		
+		-- Start torch loop (delay to allow time to update item in inventory)
 		-- Inicia loop de tocha (atraso para dar tempo de atualizar item no inventario)
-		minetest.after(0.3, hardtorch.loop_tocha, name, torchname)
-		-- Inicia loop de luz
-		hardtorch.loop_luz(name, torchname)
-		-- Som
-		hardtorch.som_acender(player:getpos(), torchname)
+		minetest.after(0.3, hardtorch.torch_loop, name, torchname)
+		
+		-- Start light loop
+		hardtorch.light_loop(name, torchname)
+		
+		-- Play sound
+		hardtorch.turnon_sound(player:getpos(), torchname)
 	end
 
 	return itemstack
 end
 
 
--- Apaga todas as tochas que um jogador possui
-hardtorch.apagar_tocha = function(player, torchname)
-	-- Remover luz do hud
-	hardtorch.remover_luz_hud(player)
+-- Turn off torchs
+-- Apagar tochas
+hardtorch.turnoff_torch = function(player, torchname)
 
-	local loop = hardtorch.em_loop[player:get_player_name()]
+	-- Remove HUD element
+	hardtorch.remove_light_hud(player)
+
+	local loop = hardtorch.in_loop[player:get_player_name()]
 
 	torchname = torchname or loop.torchname
-
-	-- Pega a tocha
+	
+	-- Take torch
 	local list, i, itemstack = hardtorch.find_and_get_item(player, torchname.."_on")
 	if list then
 		local inv = player:get_inventory()
-		-- Coloca no lugar
+		-- Set torch off
 		itemstack:set_name(torchname)
 		inv:set_stack(list, i, itemstack)
 	end
 end
 
 
--- Inicia loop de verificação apos acender tocha
-hardtorch.loop_tocha = function(name, torchname)
-	-- Verifica se ja iniciou loop
-	if not hardtorch.em_loop[name] then return end
-	-- Verifica jogador
+-- Start torch loop (for mantain torch working)
+-- Inicia loop da tocha (para manter tocha funcionando)
+hardtorch.torch_loop = function(name, torchname)
+	
+	-- Check if it is already lit (avoid double loop)
+	-- Verifica se ja esta acesa (evitar loop duplo)
+	if not hardtorch.in_loop[name] then return end
+	
+	-- Check player
 	local player = minetest.get_player_by_name(name)
 	if not player then end
-
+	
 	local def = hardtorch.registered_torchs[torchname]
-	local loop = hardtorch.em_loop[name]
-
-	-- Verifica tocha
+	local loop = hardtorch.in_loop[name]
+	
+	
+	-- Torch
+	-- Tocha
+	
+	-- Check torch
 	local list, i, itemstack = hardtorch.find_and_get_item(player, torchname.."_on")
 	if not itemstack then
-		-- Encerra loop
-		hardtorch.apagar_tocha(player, torchname)
-		hardtorch.em_loop[name] = nil
+		-- Finish loop
+		hardtorch.turnoff_torch(player, torchname)
+		hardtorch.in_loop[name] = nil
 		return
 	end
-
-	-- Verifica se tem lugar para a luz
+	
+	-- Check air for torch light
+	-- Verifica ar para luz da tocha
 	do
 		local nn = minetest.get_node(hardtorch.get_lpos(player)).name
-		if nn ~= "air" and not string.match(nn, "hardtorch:luz_") then
-			-- Encerra loop
-			hardtorch.apagar_tocha(player, torchname)
-			hardtorch.em_loop[name] = nil
+		if nn ~= "air" and not string.match(nn, "hardtorch:light_") then
+			-- Finish loop
+			hardtorch.turnoff_torch(player, torchname)
+			hardtorch.in_loop[name] = nil
 			return
 		end
 
 	end
-
+	
+	
+	-- Fuel
 	-- Combustivel
+	
+	-- Update fuel wear
 	-- Atualiza combustivel em uso
 	local inv = player:get_inventory()
 	if not loop.fuel or inv:get_stack(loop.fuel.list, loop.fuel.i):get_name() ~= loop.fuel.name then
@@ -104,85 +124,104 @@ hardtorch.loop_tocha = function(name, torchname)
 			loop.fuel = {list=listfuel, i=indexfuel, name=itemfuel:get_name()}
 		end
 	end
-	-- Consome o Combustivel
+	
+	-- Add wear to fuel item
+	-- Consome o Combustivel no inventario
 	if loop.fuel then
 		local item = inv:get_stack(loop.fuel.list, loop.fuel.i)
 		item:add_wear(hardtorch.registered_fuels[loop.fuel.name].loop_wear)
 		inv:set_stack(loop.fuel.list, loop.fuel.i, item)
 	else
+		-- "Without fuel" warning
 		-- Aviso de "sem combustivel"
 		if torchname ~= def.fuel[1] then
 			minetest.chat_send_player(player:get_player_name(), S("Without fuel"))
 		end
+		
+		-- Finish loop
 		-- Encerra loop
-		hardtorch.apagar_tocha(player, torchname)
-		hardtorch.em_loop[name] = nil
+		hardtorch.turnoff_torch(player, torchname)
+		hardtorch.in_loop[name] = nil
+		
 		return
 	end
 
-
-	-- Verifica se acabou a tocha durante o loop
+	-- Checks if fuel runs out during loop
+	-- Verifica se acabou o combustivel durante o loop
 	if itemstack:is_empty() then
+		-- Finish loop
 		-- Encerra loop
-		hardtorch.apagar_tocha(player, torchname)
-		hardtorch.em_loop[name] = nil
+		hardtorch.turnoff_torch(player, torchname)
+		hardtorch.in_loop[name] = nil
 		return
 	end
 
-
-	-- Verifica se luz do hud foi criada
+	-- Check if HUD element has been added
+	-- Verifique se o elemento HUD foi adicionado
 	if not loop.hud_id
 		or not player:hud_get(loop.hud_id)
 	then
-		hardtorch.adicionar_luz_hud(player, torchname)
+		hardtorch.add_light_hud(player, torchname)
 	end
 
-
-	-- Prepara para proximo loop
-	minetest.after(2, hardtorch.loop_tocha, name, torchname)
+	-- Wait for next loop
+	-- Aguarda para proximo loop
+	minetest.after(2, hardtorch.torch_loop, name, torchname)
 end
 
-
--- Registra as ferramentas
+-- Register tool
+-- Registrar ferramenta
 hardtorch.register_tool = function(torchname, def)
-
+	
+	-- Adjust the created tool
 	-- Ajusta a ferramenta criada
 	minetest.override_item(torchname, {
 		on_use = function(itemstack, user, pointed_thing)
 			if itemstack:get_name() ~= torchname then return end
 
-			-- Verifica se ja tem uma tocha acessa
-			if hardtorch.em_loop[user:get_player_name()] then
+			-- Check if it is already lit (avoid double loop)
+			-- Verifica se ja esta acesa (evitar loop duplo)
+			if hardtorch.in_loop[user:get_player_name()] then
 				return
 			end
-
-			-- Verifica se tem fonte de fogo
+			
+			-- Check if need fire source
+			-- Verifica se precisa de fonte de fogo
 			if hardtorch.torch_lighter then
-				if pointed_thing.under and hardtorch.fontes_de_fogo[minetest.get_node(pointed_thing.under).name]
-					or pointed_thing.above and hardtorch.fontes_de_fogo[minetest.get_node(pointed_thing.above).name]
+				
+				-- Check if turn on from fire source node
+				-- Verifica se acendeu em bloco de fonte de fogo
+				if pointed_thing.under and hardtorch.fire_sources[minetest.get_node(pointed_thing.under).name]
+					or pointed_thing.above and hardtorch.fire_sources[minetest.get_node(pointed_thing.above).name]
 				then
-					return hardtorch.acender_tocha(itemstack, user)
+					return hardtorch.turnon_torch(itemstack, user)
 				end
+				
+				-- Check if turn on with lighter
+				-- Verifica se acendeu com acendedor
 				for tool,def in pairs(hardtorch.registered_lighters) do
 					if hardtorch.find_item(user, tool) then
 						local list, i, item = hardtorch.find_and_get_item(user, tool)
 						item:add_wear(def.wear_by_use)
 						user:get_inventory():set_stack(list, i, item)
-						return hardtorch.acender_tocha(itemstack, user)
+						return hardtorch.turnon_torch(itemstack, user)
 					end
 				end
 				minetest.chat_send_player(user:get_player_name(), S("Without heat source or lighter"))
 				return itemstack
 			end
-			return hardtorch.acender_tocha(itemstack, user)
+			return hardtorch.turnon_torch(itemstack, user)
 		end,
-
-		-- Ao colocar funciona como tocha normal apenas repassando o desgaste
+		
+		-- Place torch tool like a torch node
+		-- Coloca ferramenta de tocha como nó de tocha
 		on_place = function(itemstack, placer, pointed_thing)
+			
+			-- Check for avoidable nodes
 			-- Verifica nodes evitaveis
-			if pointed_thing.under and hardtorch.evitar_tool_on_place[1] then
+			if pointed_thing.under and hardtorch.not_place_torch_on[1] then
 				local nn = minetest.get_node(pointed_thing.under).name
-				for _,n in ipairs(hardtorch.evitar_tool_on_place) do
+				for _,n in ipairs(hardtorch.not_place_torch_on) do
 					if n == nn then
 						return
 					end
@@ -194,8 +233,9 @@ hardtorch.register_tool = function(torchname, def)
 			if pointed_thing.type ~= "node" then
 				return itemstack
 			end
-
-			-- Verifica se esta acessando outro node
+			
+			-- Check if is right clicking a node
+			-- Verifica se esta acessando outro nó
 			local under = pointed_thing.under
 			local node = minetest.get_node(under)
 			local defnode = minetest.registered_nodes[node.name]
@@ -204,17 +244,20 @@ hardtorch.register_tool = function(torchname, def)
 				return defnode.on_rightclick(under, node, placer, itemstack,
 					pointed_thing) or itemstack
 			end
-
+			
+			-- Checks for any impediments in place
 			-- Verifica se tem algum impedimento no local
 			if hardtorch.check_torch_area(pointed_thing.above) == false then
 				return itemstack
 			end
-
-			-- Verificar se é um node
+			
+			-- Check if is a node
+			-- Verificar se é um nó
 			if not minetest.registered_nodes[torchname] then
 				return itemstack
 			end
-
+			
+			-- Set node according to side placement
 			-- Definir node de acordo com posicionamento
 			local above = pointed_thing.above
 			local wdir = minetest.dir_to_wallmounted(vector.subtract(under, above))
@@ -225,8 +268,9 @@ hardtorch.register_tool = function(torchname, def)
 			else
 				itemstack:set_name(def.nodes.node_wall or def.nodes.node)
 			end
-
-			-- Coloca node apagado
+			
+			-- Set turned off torch
+			-- Coloca nó de tocha apagado
 			if hardtorch.registered_torchs[torchname].nodes_off then
 				itemstack:set_name(hardtorch.registered_torchs[torchname].nodes_off.node)
 			end
@@ -234,7 +278,7 @@ hardtorch.register_tool = function(torchname, def)
 				return itemstack
 			end
 
-			-- Remove item do inventario
+			-- Remove item from inventory
 			itemstack:take_item()
 
 			return itemstack
@@ -242,14 +286,16 @@ hardtorch.register_tool = function(torchname, def)
 		end,
 
 	})
-
-	-- Versao acessa
+	
+	-- Lit version
+	-- Versao acesa
 	minetest.override_item(torchname.."_on", {
-		wield_image = "hardtorch_torch_tool_on_mao.png",
+		wield_image = "hardtorch_torch_tool_on_wield.png",
 
 		on_use = function(itemstack, user, pointed_thing)
 
-			-- Verifica se node acerta tem interação
+			-- Check if is punching another node
+			-- Verifica se batendo em outro nó
 			local under = pointed_thing.under
 			if under then
 				local node = minetest.get_node(under)
@@ -264,10 +310,10 @@ hardtorch.register_tool = function(torchname, def)
 
 			if itemstack:get_name() ~= torchname.."_on" then return end
 
-			-- Remover luz
-			hardtorch.som_apagar(user:getpos(), torchname)
+			-- Remove light from player
+			hardtorch.turnoff_sound(user:getpos(), torchname)
 			hardtorch.apagar_node_luz(user:get_player_name())
-			hardtorch.remover_luz_hud(user)
+			hardtorch.remove_light_hud(user)
 			itemstack:set_name(torchname)
 
 			return itemstack
@@ -276,23 +322,25 @@ hardtorch.register_tool = function(torchname, def)
 		on_drop = function(itemstack, dropper, pos)
 			if itemstack:get_name() ~= torchname.."_on" then return end
 
-			-- Remover luz
+			-- Remove light from player
 			hardtorch.apagar_node_luz(dropper:get_player_name())
-			hardtorch.remover_luz_hud(dropper)
+			hardtorch.remove_light_hud(dropper)
 			itemstack:set_name(torchname)
 			minetest.item_drop(itemstack, dropper, pos)
 			itemstack:clear()
 
 			return itemstack
 		end,
-
-		-- Ao colocar funciona como tocha normal apenas repassando o desgaste
+		
+		-- When place works like a torch with current fuel wear
+		-- Ao colocar funciona como tocha com desgaste atual de combustivel
 		on_place = function(itemstack, placer, pointed_thing)
-
+			
+			-- Check for avoidable nodes
 			-- Verifica nodes evitaveis
-			if pointed_thing.under and hardtorch.evitar_tool_on_place[1] then
+			if pointed_thing.under and hardtorch.not_place_torch_on[1] then
 				local nn = minetest.get_node(pointed_thing.under).name
-				for _,n in ipairs(hardtorch.evitar_tool_on_place) do
+				for _,n in ipairs(hardtorch.not_place_torch_on) do
 					if n == nn then
 						return
 					end
@@ -305,7 +353,8 @@ hardtorch.register_tool = function(torchname, def)
 				return itemstack
 			end
 
-			-- Verifica se esta acessando outro node
+			-- Check if is right clicking a node
+			-- Verifica se esta acessando outro nó
 			local under = pointed_thing.under
 			local node = minetest.get_node(under)
 			local defnode = minetest.registered_nodes[node.name]
@@ -315,24 +364,27 @@ hardtorch.register_tool = function(torchname, def)
 					pointed_thing) or itemstack
 			end
 
-			-- Verifica se ja iniciou loop
-			local loop = hardtorch.em_loop[placer:get_player_name()]
+			-- Check if it is already lit (avoid double loop)
+			-- Verifica se ja esta acesa (evitar loop duplo)
+			local loop = hardtorch.in_loop[placer:get_player_name()]
 			if not loop then
 				return itemstack
 			end
-
-			-- Verifica se tem combustivel
+			
+			-- Check fuel
+			-- Verifica combustivel
 			local inv = placer:get_inventory()
 			if not loop or not loop.fuel or inv:get_stack(loop.fuel.list, loop.fuel.i):get_name() ~= loop.fuel.name then
 				return itemstack
 			end
-
+			
+			-- Checks for any impediments in place
 			-- Verifica se tem algum impedimento no local
 			if hardtorch.check_torch_area(pointed_thing.above) == false then
 				return itemstack
 			end
 
-
+			-- Set node according to side placement
 			-- Definir node de acordo com posicionamento
 			local above = pointed_thing.above
 			local wdir = minetest.dir_to_wallmounted(vector.subtract(under, above))
@@ -349,8 +401,9 @@ hardtorch.register_tool = function(torchname, def)
 			if not itemstack then
 				return
 			end
-
-			-- Repassa desgaste de combustivel
+			
+			-- Set fuel wear to node
+			-- Repassa desgaste de combustivel ao nó
 			local fuelname, fuelwear
 			fuelname = loop.fuel.name
 			fuelwear = inv:get_stack(loop.fuel.list, loop.fuel.i):get_wear()
@@ -364,12 +417,12 @@ hardtorch.register_tool = function(torchname, def)
 			meta:set_int("hardtorch_wear", fuelwear)
 			minetest.get_node_timer(pointed_thing.above):start(hardtorch.get_node_timeout(pointed_thing.above))
 
-			-- Remove item do inventario
+			-- Remove item from inventory
 			itemstack:take_item()
 
-			-- Remover luz
+			-- Remove light from player
 			hardtorch.apagar_node_luz(placer:get_player_name())
-			hardtorch.remover_luz_hud(placer)
+			hardtorch.remove_light_hud(placer)
 
 			return itemstack
 		end,
@@ -377,12 +430,14 @@ hardtorch.register_tool = function(torchname, def)
 
 end
 
+
+-- Turn off wielded torch when player disconnect
 -- Apaga tocha da mão quando o jogador desconecta
 minetest.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
-	if hardtorch.em_loop[name] then
-		hardtorch.apagar_tocha(player, hardtorch.em_loop[name].torchname)
-		hardtorch.em_loop[name] = nil
+	if hardtorch.in_loop[name] then
+		hardtorch.turnoff_torch(player, hardtorch.in_loop[name].torchname)
+		hardtorch.in_loop[name] = nil
 	end
 end)
 

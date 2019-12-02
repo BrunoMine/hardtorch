@@ -1,34 +1,44 @@
 --[[
-	Mod HardTorch para Minetest
-	Copyright (C) 2018 BrunoMine (https://github.com/BrunoMine)
-
-	Recebeste uma cópia da GNU Lesser General
-	Public License junto com esse software,
-	se não, veja em <http://www.gnu.org/licenses/>.
-
-	Inicializador de scripts
+	Mod HardTorch for Minetest
+	Copyright (C) 2019 BrunoMine (https://github.com/BrunoMine)
+	
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <https://www.gnu.org/licenses/>5.
+	
   ]]
 
 
+-- Global Table
 -- Tabela Global
 hardtorch = {}
 
--- Tabela de jogadores em loop de tocha acessa
-hardtorch.em_loop = {}
 
+-- Players in loop to torchs on
+-- Jogadores em loop de tocha acesa
+hardtorch.in_loop = {}
+
+
+-- Require fire source to light torch
 -- Requerer fonte de fogo para acender tocha
 hardtorch.torch_lighter = (minetest.settings:get("hardtorch_torch_lighter") == "true") or false
 
--- Nodes que funcionam como fontes de fogo para acender tochas
-hardtorch.fontes_de_fogo = {}
 
+-- Fire sources (nodes that act as fire sources to light torches)
+-- Fontes de fogo (nodes que funcionam como fontes de fogo para acender tochas)
+hardtorch.fire_sources = {}
+
+
+-- Nodes to avoid when placing torches
 -- Nodes para evitar ao colocar tochas
-hardtorch.evitar_tool_on_place = {}
--- Mod Anvil
+hardtorch.not_place_torch_on = {}
+
+-- Anvil Mod
 if minetest.get_modpath("anvil") then
-	table.insert(hardtorch.evitar_tool_on_place, "anvil:anvil")
+	table.insert(hardtorch.not_place_torch_on, "anvil:anvil")
 end
 
+
+-- Fixed time for a night
 -- Tempo fixo de duração de uma noite
 hardtorch.night_time = tonumber(minetest.settings:get("hardtorch_fixed_night_time") or 0)
 if hardtorch.night_time == 0 then
@@ -39,48 +49,58 @@ if hardtorch.night_time == 0 then
 	hardtorch.night_time = (12*60*60)/time_speed
 end
 
+
+-- Notify load
 -- Notificador de Inicializador
-local notificar = function(msg)
+local notify = function(msg)
 	if minetest.settings:get("log_mods") then
-		minetest.debug("[HardTorch]"..msg)
+		minetest.debug("[HardTorch] "..msg)
 	end
 end
+
 
 -- Modpath
 local modpath = minetest.get_modpath("hardtorch")
 
-
 -- Carregar scripts
-notificar("Carregando...")
--- Metodos gerais
-dofile(modpath.."/comum.lua")
-dofile(modpath.."/luz.lua")
+notify("Loading...")
+
+-- API
+dofile(modpath.."/common.lua")
+dofile(modpath.."/light.lua")
 dofile(modpath.."/tool.lua")
 dofile(modpath.."/node.lua")
 dofile(modpath.."/lighter.lua")
 dofile(modpath.."/fuel.lua")
 dofile(modpath.."/api.lua")
+
+-- Content
 dofile(modpath.."/oil.lua")
 dofile(modpath.."/torchs/torch.lua")
 dofile(modpath.."/torchs/lamp.lua")
 dofile(modpath.."/torchs/xdecor_candle.lua")
-notificar("[OK]!")
+
+notify("OK!")
 
 
+-- Preset
 -- Pré ajustes
 
+-- Lighter Flint and Steel
 -- Acendedor de pederneira
 hardtorch.register_lighter("fire:flint_and_steel", {
 	wear_by_use = 1000
 })
 
+-- Fire source nodes
 -- Nodes fonte de fogo
-hardtorch.fontes_de_fogo["default:furnace_active"] = true
-hardtorch.fontes_de_fogo["default:lava_flowing"] = true
-hardtorch.fontes_de_fogo["default:lava_source"] = true
-hardtorch.fontes_de_fogo["fire:basic_flame"] = true
-hardtorch.fontes_de_fogo["fire:permanent_flame"] = true
+hardtorch.fire_sources["default:furnace_active"] = true
+hardtorch.fire_sources["default:lava_flowing"] = true
+hardtorch.fire_sources["default:lava_source"] = true
+hardtorch.fire_sources["fire:basic_flame"] = true
+hardtorch.fire_sources["fire:permanent_flame"] = true
 
+-- Campfire Mod
 if minetest.get_modpath("campfire") then
-	hardtorch.fontes_de_fogo["campfire:campfire_active"] = true
+	hardtorch.fire_sources["campfire:campfire_active"] = true
 end
