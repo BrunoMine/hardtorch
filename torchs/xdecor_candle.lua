@@ -1,21 +1,25 @@
 --[[
 	Mod HardTorch para Minetest
 	Copyright (C) 2019 BrunoMine (https://github.com/BrunoMine)
-	
+
 	Recebeste uma cópia da GNU Lesser General
 	Public License junto com esse software,
-	se não, veja em <http://www.gnu.org/licenses/>. 
-	
+	se não, veja em <http://www.gnu.org/licenses/>.
+
 	Registro de Vela (candle) do mod xdecor
   ]]
 
 if minetest.registered_nodes["xdecor:candle"] == nil then return end
 
+-- Used for localization
+
+local S = minetest.get_translator("hardtorch")
+
 -- Luminosidade da lamparina
-local candle_light_source = hardtorch.check_light_number(minetest.settings:get("hardtorch_xdecor_candle_light_source") or 7) 
+local candle_light_source = hardtorch.check_light_number(minetest.settings:get("hardtorch_xdecor_candle_light_source") or 7)
 
 -- Noites de durabilidade da tocha
-local candle_nights = math.abs(tonumber(minetest.settings:get("hardtorch_xdecor_candle_nights") or 0.8)) 
+local candle_nights = math.abs(tonumber(minetest.settings:get("hardtorch_xdecor_candle_nights") or 0.8))
 if candle_nights <= 0 then candle_nights = 0.8 end
 
 
@@ -37,7 +41,7 @@ hardtorch.register_fuel("hardtorch:xdecor_candle_on", {
 
 -- Registrar ferramentas
 minetest.register_tool("hardtorch:xdecor_candle", {
-	description = "Candle (used)",
+	description = S("Candle (used)"),
 	inventory_image = "xdecor_candle_wield.png",
 	wield_image = "xdecor_candle_wield.png",
 	groups = {not_in_creative_inventory = 1},
@@ -55,8 +59,8 @@ hardtorch.register_torch("hardtorch:xdecor_candle", {
 	light_source = minetest.registered_nodes["xdecor:candle"].light_source,
 	fuel = {"hardtorch:xdecor_candle_on"},
 	nodes = {
-		node = "xdecor:candle", 
-		node_ceiling = "xdecor:candle", 
+		node = "xdecor:candle",
+		node_ceiling = "xdecor:candle",
 		node_wall = "xdecor:candle"
 	},
 	sounds = {

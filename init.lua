@@ -1,11 +1,11 @@
 --[[
 	Mod HardTorch para Minetest
 	Copyright (C) 2018 BrunoMine (https://github.com/BrunoMine)
-	
+
 	Recebeste uma cópia da GNU Lesser General
 	Public License junto com esse software,
-	se não, veja em <http://www.gnu.org/licenses/>. 
-	
+	se não, veja em <http://www.gnu.org/licenses/>.
+
 	Inicializador de scripts
   ]]
 
@@ -80,5 +80,7 @@ hardtorch.fontes_de_fogo["default:lava_flowing"] = true
 hardtorch.fontes_de_fogo["default:lava_source"] = true
 hardtorch.fontes_de_fogo["fire:basic_flame"] = true
 hardtorch.fontes_de_fogo["fire:permanent_flame"] = true
-	
-	
+
+if minetest.get_modpath("campfire") then
+	hardtorch.fontes_de_fogo["campfire:campfire_active"] = true
+end
