@@ -63,7 +63,7 @@ hardtorch.fire_sources["fire:permanent_flame"] = true
     {
         light_source = 13, 	-- Torch illumination intensity (maximum is 14)
         
-        fuel = {"itemfuel1", "itemfuel_2"}, 	-- List of fuels
+        fuel = {"itemfuel1", "itemfuel_2"}, -- List of fuels
         
         works_in_water = false, 		-- Torch works in water (if `true` ignores `drop_in_water` param) <optional>
         
@@ -72,14 +72,14 @@ hardtorch.fire_sources["fire:permanent_flame"] = true
         nodes = { 				-- Nodes for lit torch
             node = "default_node", 		-- Lit torch node
             node_ceiling = "node_ceiling", 	-- Node ceiling <optional>
-            node_wall = "node_wall", 		-- Node on wall <optional>
+            node_wall = "node_wall", 	-- Node on wall <optional>
             fire_source = true, 		-- Register nodes like a fire source (default is `true`) <optional>
         } 
         
-        nodes_off = { 				-- Nodes for unlit torch
-            node = "unlit_torch_node", 		-- Unlit torch node
+        nodes_off = { 			-- Nodes for unlit torch
+            node = "unlit_torch_node", 	-- Unlit torch node
             node_ceiling = "node_ceiling", 	-- Node ceiling <optional>
-            node_wall = "node_wall", 		-- Node on wall <optional>
+            node_wall = "node_wall", 	-- Node on wall <optional>
         },
         
         sounds = { 				-- Sounds
