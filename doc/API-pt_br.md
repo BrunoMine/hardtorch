@@ -3,15 +3,15 @@ API de Desenvolvimento Lua para o mod HardTorch
 
 Introdução
 ----------
-Esse Mod possui alguns metodos para registrar tochas e combustiveis compativeis, bem como outros 
+Esse mod possui alguns métodos para registrar tochas, combustiveis e acendedores, bem como outros 
 recursos para apoiar o desenvolvimento de outras modificações afim de manter compatibilidade.
 
 ### Tochas
-Ao registrar uma tocha, nenhum item (nó ou ferramenta) é criado. A API irá modificar os itens já 
-registrados em Minetest afim de funcionarem como um único item que é a tocha. Portanto, toda a 
-arte e aspectos físicos da tocha não é realizado pela API e deve ser previamente criado, 
+Ao registrar uma tocha, nenhum item (nó ou ferramenta) é criado. A API modificara os itens já 
+registrados em Minetest para funcionarem como um único item que é a tocha. Portanto, toda a 
+arte e aspectos físicos de tais itens não são realizados pela API e devem ser previamente criados, 
 isso permite mais personalização de cada tocha. 
-Os itens previamente criados, e que serão usados para registrar a tocha são:
+Os itens que devem ser previamente criados, e que serão usados para registrar a tocha são:
 
 * Tocha: Item do tipo ferramenta que será usado como tocha apagada no inventario.
 * Tocha acesa: Item do tipo ferramenta que será usado como tocha acesa no invenario.
