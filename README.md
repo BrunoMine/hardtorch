@@ -5,7 +5,7 @@ HardTorch v0.5.7
 [![Project](https://img.shields.io/badge/Git-Project-green.svg)](https://github.com/BrunoMine/hardtorch)
 [![API](https://img.shields.io/badge/API-Project-green.svg)](https://github.com/BrunoMine/hardtorch/blob/master/doc/API.md)
 [![!Bower](https://img.shields.io/badge/Bower-Project-green.svg)](https://minetest-bower.herokuapp.com/mods/hardtorch)
-[![License](https://img.shields.io/badge/Licença-LGPL_v3.0-blue.svg)](https://github.com/BrunoMine/hardtorch/blob/master/doc/LICENSE.txt)
+[![License](https://img.shields.io/badge/License-LGPL_v3.0-blue.svg)](https://github.com/BrunoMine/hardtorch/blob/master/doc/LICENSE.txt)
 
 This mod will make torches much more realistic.
 
