@@ -3,9 +3,9 @@ HardTorch v0.5.6
 
 [![Baixar](https://img.shields.io/github/tag/BrunoMine/hardtorch.svg?style=flat-square&label=release)](https://github.com/BrunoMine/hardtorch/archive/master.zip)
 [![Projeto](https://img.shields.io/badge/Git-Projeto-green.svg)](https://github.com/BrunoMine/hardtorch)
-[![API](https://img.shields.io/badge/API-Projeto-green.svg)](https://github.com/BrunoMine/hardtorch/blob/master/API.txt)
+[![API](https://img.shields.io/badge/API-Projeto-green.svg)](https://github.com/BrunoMine/hardtorch/blob/master/doc/API-pt_br.txt)
 [![!Bower](https://img.shields.io/badge/Bower-Projeto-green.svg)](https://minetest-bower.herokuapp.com/mods/hardtorch)
-[![Licença](https://img.shields.io/badge/Licença-LGPL_v3.0-blue.svg)](https://github.com/BrunoMine/hardtorch/blob/master/LICENSE.txt)
+[![Licença](https://img.shields.io/badge/Licença-LGPL_v3.0-blue.svg)](https://github.com/BrunoMine/hardtorch/blob/master/doc/LICENSE.txt)
 
 Este mod vai tornar as tochas muito mais realistas.
 
@@ -13,6 +13,10 @@ Este mod vai tornar as tochas muito mais realistas.
 * Minetest 0.4.16 (ou superior)
 * Mod default
 * Mod fire
+
+## Mods suportados
+* campfire
+* xdecor
 
 ## Configuraçes
 Veja as configuraçes no menu de configurações avançadas da interface grafica de Minetest ou em [minetest.conf.example](https://github.com/BrunoMine/hardtorch/blob/master/minetest.conf.example).
@@ -37,3 +41,8 @@ celeron55, Perttu Ahola <celeron55@gmail.com> (CC BY-SA 3.0)
 Jojikiba (CC BY-SA 3.0)
 	hardtorch_turnon_torch.ogg (editado por Lunovox)
 
+## Recursos Usados
+* [Gedit](https://wiki.gnome.org/Apps/Gedit)
+* [NodeBoxEditor](https://rubenwardy.com/NodeBoxEditor/)
+* [Gimp](https://www.gimp.org/)
+* [Audacity](https://www.audacityteam.org/)
