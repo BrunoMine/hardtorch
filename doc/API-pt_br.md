@@ -55,7 +55,9 @@ A necessidade da fonte de calor para acender tochas é desabilitada por padrão 
         
         fuel = {"combust1", "combust2"}, 	-- Lista de combustiveis
         
-        drop_on_water = "item_dropado", 	-- Item caido se molhar a tocha (por padrão é a tocha) <opicional>
+        works_in_water = false, 		-- Tocha funciona na agua (se `true`, ignora o parametro `drop_in_water`) <opicional>
+        
+        drop_on_water = "item_dropado", 	-- Item caido se molhar a tocha (se `false`, a tocha não cairá) <opicional>
         
         nodes = { 				-- Blocos de tocha acesa
             node = "bloco_padrao", 		-- Bloco aceso

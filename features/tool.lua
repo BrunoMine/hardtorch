@@ -245,9 +245,9 @@ hardtorch.register_tool = function(torchname, def)
 					pointed_thing) or itemstack
 			end
 			
-			-- Checks for any impediments in place
-			-- Verifica se tem algum impedimento no local
-			if hardtorch.check_torch_area(pointed_thing.above) == false then
+			-- Checks for water in torch sides
+			-- Verifica se tem agua nas laterais da tocha
+			if def.drop_on_water ~= false and hardtorch.check_node_sides(pointed_thing.above, {"group:water"}) == true then
 				return itemstack
 			end
 			
@@ -378,9 +378,9 @@ hardtorch.register_tool = function(torchname, def)
 				return itemstack
 			end
 			
-			-- Checks for any impediments in place
-			-- Verifica se tem algum impedimento no local
-			if hardtorch.check_torch_area(pointed_thing.above) == false then
+			-- Checks for water in torch sides
+			-- Verifica se tem agua nas laterais da tocha
+			if def.works_in_water ~= true and hardtorch.check_node_sides(pointed_thing.above, {"group:water"}) == true then
 				return itemstack
 			end
 

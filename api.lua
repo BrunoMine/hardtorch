@@ -16,11 +16,12 @@ hardtorch.registered_torchs = {}
 -- Registrar tocha
 hardtorch.register_torch = function(name, def)
 	
-	hardtorch.registered_torchs[name] = def
-	
 	-- Consolidate data
 	-- Consolidar dados
-	hardtorch.registered_torchs[name].sounds = def.sounds or {}
+	def.sounds = def.sounds or {}
+	def.drop_on_water = def.drop_on_water or true
+	
+	hardtorch.registered_torchs[name] = def
 	
 	-- Register tools (off and on)
 	-- Registrar ferramentas (apagada e acesa)

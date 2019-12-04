@@ -12,6 +12,21 @@
 -- Nodes registrados
 hardtorch.registered_nodes = {}
 
+-- Turn off torch node
+local turn_off_torch_node = function(pos, def)
+	local node = minetest.get_node(pos)
+	
+	if node.name == def.nodes.node then
+		node.name=def.nodes_off.node
+	elseif node.name == def.nodes.node_ceiling then
+		node.name=def.nodes_off.node_ceiling
+	elseif node.name == def.nodes.node_wall then
+		node.name=def.nodes_off.node_wall
+	end
+	
+	minetest.set_node(pos, node)
+end
+
 -- Register torch node
 -- Registrar Node de tocha
 hardtorch.register_node = function(torchname, def)
@@ -166,16 +181,7 @@ hardtorch.register_node = function(torchname, def)
 		if not hardtorch.registered_nodes[minetest.get_node(pos).name] then return end
 		
 		if def.nodes_off then
-			local node = minetest.get_node(pos)
-			
-			if node.name == def.nodes.node then
-				node.name=def.nodes_off.node
-			elseif node.name == def.nodes.node_ceiling then
-				node.name=def.nodes_off.node_ceiling
-			elseif node.name == def.nodes.node_wall then
-				node.name=def.nodes_off.node_wall
-			end
-			minetest.set_node(pos, node)
+			turn_off_torch_node(pos, def)
 		else
 			minetest.remove_node(pos)
 		end
@@ -213,11 +219,29 @@ hardtorch.register_node = function(torchname, def)
 		chance = 3,
 		catch_up = false,
 		action = function(pos, node)
-			if hardtorch.check_torch_area(pos) == false then
-				local wear = hardtorch.get_node_wear(pos)
-				hardtorch.turnoff_by_water_sound(pos, torchname)
+			if def.works_in_water == true then return end
+			
+			if hardtorch.check_node_sides(pos, {"group:water"}) == false then return end
+			
+			hardtorch.turnoff_by_water_sound(pos, torchname)
+			
+			local force_drop = false
+			
+			-- Try turn off
+			if def.nodes_off then
+				turn_off_torch_node(pos, def)
+			else
+				force_drop = true
+			end
+			
+			-- Drop
+			if force_drop == true or def.drop_on_water ~= false then
 				minetest.remove_node(pos)
-				minetest.add_item(pos, def.drop_on_water or {name=torchname, wear=wear})
+				if type(def.drop_on_water) == "string" then
+					minetest.add_item(pos, {name=def.drop_on_water, wear=wear})
+				else
+					minetest.add_item(pos, {name=torchname, wear=wear})
+				end
 			end
 		end,
 	})

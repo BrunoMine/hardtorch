@@ -93,7 +93,7 @@ end
 
 -- Check nodes near torch
 -- Verificar blocos perto da tocha
-hardtorch.check_torch_area = function(pos)
+hardtorch.check_node_sides = function(pos, nodes)
 	for _,p in ipairs({
 		{x=pos.x+1, y=pos.y, z=pos.z},
 		{x=pos.x, y=pos.y+1, z=pos.z},
@@ -102,11 +102,11 @@ hardtorch.check_torch_area = function(pos)
 		{x=pos.x, y=pos.y-1, z=pos.z},
 		{x=pos.x, y=pos.y, z=pos.z-1},
 	}) do
-		if minetest.find_nodes_in_area(p, p, {"group:water"})[1] then
-			return false
+		if minetest.find_nodes_in_area(p, p, nodes)[1] then
+			return true
 		end
 	end
-	return true
+	return false
 end
 
 
