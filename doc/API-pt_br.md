@@ -3,7 +3,7 @@ API de Desenvolvimento Lua para o mod HardTorch
 
 Introdução
 ----------
-Esse mod possui alguns métodos para registrar tochas, combustiveis e acendedores, bem como outros 
+Esse mod possui alguns métodos para registrar tochas, combustíveis e acendedores, bem como outros 
 recursos para apoiar o desenvolvimento de outras modificações afim de manter compatibilidade.
 
 ### Tochas
@@ -18,19 +18,19 @@ Os itens que devem ser previamente criados, e que serão usados para registrar a
 * Tocha acesa: Item do tipo ferramenta que será usado como tocha acesa no invenario.
   * Esse item deve possuir o mesmo itemstring da tocha apagada com a adição do sufixo "_on".
   * Parâmetros ´wield_image´, ´on_use´, ´on_drop´ e ´on_place´ são redefinidos pela API.
-* Bloco de tocha: Item do tipo nó/bloco que será colocado no chão como uma tocha apagada.
-* Bloco de tocha acesa: Item do tipo nó/bloco que será colocado no chão como uma tocha acesa.
+* Bloco de tocha: Item do tipo nó/bloco que será colocado como uma tocha apagada.
+* Bloco de tocha acesa: Item do tipo nó/bloco que será colocado como uma tocha acesa.
   * Parâmetros ´drop´, ´on_dig´, ´on_use´, ´after_place_node´, ´on_timer´ e ´on_place´ são redefinidos pela API.
-* Combustivel: Item do tipo ferramenta que será desgastado enquanto a tocha estiver acesa.
+* Combustível: Item do tipo ferramenta que será desgastado enquanto a tocha estiver acesa.
 
-### Combustiveis
-O combustivel é um item do tipo ferramenta que será consumido enquanto o jogador estiver com uma 
-tocha acesa ou repassado para a tocha acesa que for colocada como bloco. Todos os combustiveis 
-precisam ser previamente registrados como tal atravez do método correspondente.
+### Combustíveis
+O combustível é um item do tipo ferramenta que será consumido enquanto o jogador estiver com uma 
+tocha acesa ou repassado para a tocha acesa que for colocada como bloco. Todos os combustíveis 
+precisam ser previamente registrados como tal através do método correspondente.
 
 ### Acendedores
 O acendedor é um item do tipo ferramenta usado para acender uma tocha no inventario. Todos os 
-acendedores precisam ser previamente registrados como tal atravez do método correspondente. 
+acendedores precisam ser previamente registrados como tal através do método correspondente. 
 A necessidade do acendedor é desabilitada por padrão nas configurações de jogo.
 
 ### Fontes de calor
@@ -47,12 +47,12 @@ hardtorch.fire_sources["fire:permanent_flame"] = true
 
 ### Métodos
 * `hardtorch.register_torch(itemstring, {definições da tocha})`: Registra uma tocha.
-* `hardtorch.register_fuel(itemstring, {definições do combustivel})`: Registra uma combustivel.
+* `hardtorch.register_fuel(itemstring, {definições do combustível})`: Registra uma combustível.
 * `hardtorch.register_lighter(itemstring, {definições do acendedor})`: Registra um acendedor.
 
 ### Tabelas globais
 * `hardtorch.registered_torchs`: Definições de tochas registradas, indexado por itemstring.
-* `hardtorch.registered_fuels`: Definições de combustiveis registrados, indexado por itemstring.
+* `hardtorch.registered_fuels`: Definições de combustíveis registrados, indexado por itemstring.
 * `hardtorch.registered_lighters`: Definições de acendedores registrados, indexado por itemstring.
 * `hardtorch.registered_nodes`: Definições de nós/blocos de tocha registrados, indexado por itemstring.
 * `hardtorch.fire_sources`: Lista de fontes de calor, indexado por itemstring.
@@ -63,7 +63,7 @@ hardtorch.fire_sources["fire:permanent_flame"] = true
     {
         light_source = 13, 	-- Intensidade de iluminação da tocha (máximo é 14)
         
-        fuel = {"combust1", "combust2"}, 	-- Lista de combustiveis
+        fuel = {"combust1", "combust2"}, 	-- Lista de combustíveis
         
         works_in_water = false, 		-- Tocha funciona na agua (se `true`, ignora o parametro `drop_in_water`) <opicional>
         
@@ -90,7 +90,7 @@ hardtorch.fire_sources["fire:permanent_flame"] = true
         
     }
 
-#### Definições do combustivel (`register_fuel`)
+#### Definições do combustível (`register_fuel`)
 
     {
         turns = 1.0, 	-- Noites de duração
@@ -99,7 +99,7 @@ hardtorch.fire_sources["fire:permanent_flame"] = true
 #### Definições do acendedor (`register_lighter`)
 
     {
-        wear_by_use = 1000, 	-- Desgaste causado na ferramenta
+        wear_by_use = 100, 	-- Desgaste causado na ferramenta
     }
 
 #### Definições de som
