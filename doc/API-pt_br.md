@@ -14,10 +14,13 @@ isso permite mais personalização de cada tocha.
 Os itens que devem ser previamente criados, e que serão usados para registrar a tocha são:
 
 * Tocha: Item do tipo ferramenta que será usado como tocha apagada no inventario.
+  * Parâmetros ´on_use´ e ´on_place´ são redefinidos pela API.
 * Tocha acesa: Item do tipo ferramenta que será usado como tocha acesa no invenario.
   * Esse item deve possuir o mesmo itemstring da tocha apagada com a adição do sufixo "_on".
+  * Parâmetros ´wield_image´, ´on_use´, ´on_drop´ e ´on_place´ são redefinidos pela API.
 * Bloco de tocha: Item do tipo nó/bloco que será colocado no chão como uma tocha apagada.
 * Bloco de tocha acesa: Item do tipo nó/bloco que será colocado no chão como uma tocha acesa.
+  * Parâmetros ´drop´, ´on_dig´, ´on_use´, ´after_place_node´, ´on_timer´ e ´on_place´ são redefinidos pela API.
 * Combustivel: Item do tipo ferramenta que será desgastado enquanto a tocha estiver acesa.
 
 ### Combustiveis

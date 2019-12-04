@@ -206,8 +206,8 @@ hardtorch.register_node = function(torchname, def)
 	-- Upgrades torches with new calling features
 	-- Atualiza tochas com novas funções de chamadas
 	minetest.override_item(def.nodes.node, node_torch_def)
-	minetest.override_item(def.nodes.node_ceiling or def.nodes.node, node_torch_def)
-	minetest.override_item(def.nodes.node_wall or def.nodes.node, node_torch_def)
+	if def.nodes.node_ceiling then minetest.override_item(def.nodes.node_ceiling, node_torch_def) end
+	if def.nodes.node_wall then minetest.override_item(def.nodes.node_wall, node_torch_def) end
 
 	-- Turn off torches in contact with water
 	-- Apagar tochas em contato com agua
