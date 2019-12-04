@@ -38,6 +38,13 @@ As fontes de calor são blocos que podem ser usados para acender uma tocha. Os n
 usados como fonte de calor precisar ser inseridos na tabela correspondente.
 A necessidade da fonte de calor para acender tochas é desabilitada por padrão nas configurações de jogo.
 
+Exemplos:
+```lua
+hardtorch.fire_sources["default:furnace_active"] = true
+hardtorch.fire_sources["default:lava_flowing"] = true
+hardtorch.fire_sources["fire:permanent_flame"] = true
+```
+
 ### Métodos
 * `hardtorch.register_torch(itemstring, {definições da tocha})`: Registra uma tocha.
 * `hardtorch.register_fuel(itemstring, {definições do combustivel})`: Registra uma combustivel.
