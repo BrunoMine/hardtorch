@@ -70,10 +70,10 @@ A necessidade da fonte de calor para acender tochas é desabilitada por padrão 
             node_wall = "bloco_na_parede", 	-- Opcional para nodes wallmounted
         },
         
-        sounds = { 				        -- Sons
-            turn_on = {name="som", gain=1.0}, 	-- Som de acender tocha
-            turn_off = {name="som", gain=1.0}, 	-- Som de apagar tocha de forma generica
-            water_turn_off = {name="som", gain=1.0}, -- Som de apagar tocha com agua
+        sounds = { 				-- Sons
+            turn_on = {definições de som}, 	-- Som de acender tocha
+            turn_off = {definições de som}, -- Som de apagar tocha de forma generica
+            water_turn_off = {definições de som}, -- Som de apagar tocha com agua
         },
         
     }
@@ -88,6 +88,13 @@ A necessidade da fonte de calor para acender tochas é desabilitada por padrão 
 
     {
         wear_by_use = 1000, 	-- Desgaste causado na ferramenta
+    }
+
+#### Definições de som
+
+    {
+        name = "nome_do_som", 	-- Nome do som (nome do arquivo sem o sufixo ".ogg")
+        gain = 1.0, 		-- Ganho de volume
     }
 
 
