@@ -55,18 +55,18 @@ A necessidade da fonte de calor para acender tochas é desabilitada por padrão 
         
         nodes = { 				-- Blocos de tocha acesa
             node = "bloco_padrao", 		-- Bloco padrão padrão
-            node_ceiling = "bloco_no_teto", 	-- Blocos colocados no teto <opicional>
+            node_ceiling = "bloco_no_teto", -- Blocos colocados no teto <opicional>
             node_wall = "bloco_na_parede", 	-- Blocos colocados na parede <opicional>
             fire_source = true, 		-- Registra como fonte de fogo (padrão é `true`) <opicional>
         },
         
-        nodes_off = { 				-- Bloco de tocha apagada
+        nodes_off = { 			-- Bloco de tocha apagada
             node = "bloco_padrao_apagado", 	-- Bloco apagado quando colocado no mapa
-            node_ceiling = "bloco_no_teto", 	-- Opcional para nodes wallmounted
+            node_ceiling = "bloco_no_teto", -- Opcional para nodes wallmounted
             node_wall = "bloco_na_parede", 	-- Opcional para nodes wallmounted
         },
         
-        sounds = { 				-- Sons
+        sounds = { 				        -- Sons
             turn_on = {name="som", gain=1.0}, 	-- Som de acender tocha
             turn_off = {name="som", gain=1.0}, 	-- Som de apagar tocha de forma generica
             water_turn_off = {name="som", gain=1.0}, -- Som de apagar tocha com agua
