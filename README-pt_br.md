@@ -26,7 +26,8 @@ Veja LICENSE.txt para informações detalhadas da licença LGPL 3.0
 
 Autores do código fonte
 -----------------------
-Originalmente por BrunoMine, Bruno Borges <borgesdossantosbruno@gmail.com> (LGPL 3.0)
+Originalmente (2017-2019) por BrunoMine, Bruno Borges <https://github.com/BrunoMine>
+Contribuição (2019) por Hamlet, <https://github.com/h4ml3t>
 
 Autores de mídias (texturas, modelos and sons)
 ----------------------------------------------

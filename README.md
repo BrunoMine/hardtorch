@@ -26,7 +26,8 @@ See LICENSE.txt for detailed info about LGPL 3.0 license
 
 Source code authors
 -------------------
-Originally by BrunoMine, Bruno Borges <borgesdossantosbruno@gmail.com> (LGPL 3.0)
+Originally (2017-2019) by BrunoMine, Bruno Borges <https://github.com/BrunoMine>
+Contribution (2019) by Hamlet <https://github.com/h4ml3t>
 
 Media authors (textures, models and sounds)
 -------------------------------------------
