@@ -58,16 +58,16 @@ A necessidade da fonte de calor para acender tochas é desabilitada por padrão 
         drop_on_water = "item_dropado", 	-- Item caido se molhar a tocha (por padrão é a tocha) <opicional>
         
         nodes = { 				-- Blocos de tocha acesa
-            node = "bloco_padrao", 		-- Bloco padrão padrão
-            node_ceiling = "bloco_no_teto", -- Blocos colocados no teto <opicional>
-            node_wall = "bloco_na_parede", 	-- Blocos colocados na parede <opicional>
+            node = "bloco_padrao", 		-- Bloco aceso
+            node_ceiling = "bloco_no_teto", -- Bloco colocado no teto <opicional>
+            node_wall = "bloco_na_parede", 	-- Bloco colocado na parede <opicional>
             fire_source = true, 		-- Registra como fonte de fogo (padrão é `true`) <opicional>
         },
         
-        nodes_off = { 			-- Bloco de tocha apagada
+        nodes_off = { 			-- Blocos de tocha apagada
             node = "bloco_padrao_apagado", 	-- Bloco apagado quando colocado no mapa
-            node_ceiling = "bloco_no_teto", -- Opcional para nodes wallmounted
-            node_wall = "bloco_na_parede", 	-- Opcional para nodes wallmounted
+            node_ceiling = "bloco_no_teto", -- Bloco colocado no teto <opicional>
+            node_wall = "bloco_na_parede", 	-- Bloco colocado na parede <opicional>
         },
         
         sounds = { 				-- Sons
