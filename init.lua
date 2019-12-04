@@ -8,35 +8,31 @@
   ]]
 
 
--- Global Table
--- Tabela Global
+-- Global Tables
+
+-- API Table
+-- Tabela da API
 hardtorch = {}
 
-
--- Players in loop to torchs on
+-- Players in loop to lit torch
 -- Jogadores em loop de tocha acesa
 hardtorch.in_loop = {}
-
-
--- Require fire source to light torch
--- Requerer fonte de fogo para acender tocha
-hardtorch.torch_lighter = (minetest.settings:get("hardtorch_torch_lighter") == "true") or false
-
 
 -- Fire sources (nodes that act as fire sources to light torches)
 -- Fontes de fogo (nodes que funcionam como fontes de fogo para acender tochas)
 hardtorch.fire_sources = {}
 
-
 -- Nodes to avoid when placing torches
 -- Nodes para evitar ao colocar tochas
 hardtorch.not_place_torch_on = {}
 
--- Anvil Mod
-if minetest.get_modpath("anvil") then
-	table.insert(hardtorch.not_place_torch_on, "anvil:anvil")
-end
 
+
+-- Load settings
+
+-- Require fire source to light torch
+-- Requerer fonte de fogo para acender tocha
+hardtorch.torch_lighter = (minetest.settings:get("hardtorch_torch_lighter") == "true") or false
 
 -- Fixed time for a night
 -- Tempo fixo de duração de uma noite
@@ -50,6 +46,9 @@ if hardtorch.night_time == 0 then
 end
 
 
+
+-- Load scripts
+
 -- Notify load
 -- Notificador de Inicializador
 local notify = function(msg)
@@ -58,32 +57,27 @@ local notify = function(msg)
 	end
 end
 
-
 -- Modpath
 local modpath = minetest.get_modpath("hardtorch")
 
--- Carregar scripts
 notify("Loading...")
-
--- API
-dofile(modpath.."/common.lua")
-dofile(modpath.."/light.lua")
-dofile(modpath.."/tool.lua")
-dofile(modpath.."/node.lua")
-dofile(modpath.."/lighter.lua")
-dofile(modpath.."/fuel.lua")
-dofile(modpath.."/api.lua")
-
+-- API features
+dofile(modpath.."/features/common.lua")
+dofile(modpath.."/features/light.lua")
+dofile(modpath.."/features/tool.lua")
+dofile(modpath.."/features/node.lua")
+dofile(modpath.."/features/fuel.lua")
+dofile(modpath.."/features/api.lua")
 -- Content
-dofile(modpath.."/oil.lua")
-dofile(modpath.."/torchs/torch.lua")
-dofile(modpath.."/torchs/lamp.lua")
-dofile(modpath.."/torchs/xdecor_candle.lua")
-
+dofile(modpath.."/content/oil.lua")
+dofile(modpath.."/content/torch.lua")
+dofile(modpath.."/content/lamp.lua")
+dofile(modpath.."/content/xdecor_candle.lua")
 notify("OK!")
 
 
--- Preset
+
+-- Presets
 -- Pré ajustes
 
 -- Lighter Flint and Steel
@@ -100,7 +94,12 @@ hardtorch.fire_sources["default:lava_source"] = true
 hardtorch.fire_sources["fire:basic_flame"] = true
 hardtorch.fire_sources["fire:permanent_flame"] = true
 
--- Campfire Mod
+-- Campfire mod
 if minetest.get_modpath("campfire") then
 	hardtorch.fire_sources["campfire:campfire_active"] = true
+end
+
+-- Anvil mod
+if minetest.get_modpath("anvil") then
+	table.insert(hardtorch.not_place_torch_on, "anvil:anvil")
 end

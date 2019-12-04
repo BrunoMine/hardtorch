@@ -8,8 +8,8 @@
 	API
   ]]
 
--- Torchs table
--- Tabela de tochas
+-- Global Table
+-- Tabela Global
 hardtorch.registered_torchs = {}
 
 -- Register torch
@@ -40,8 +40,8 @@ hardtorch.register_torch = function(name, def)
 end
 
 
--- Lighters table
--- Tabela de acendedores
+-- Global Table
+-- Tabela global
 hardtorch.registered_lighters = {}
 
 -- Register lighter
