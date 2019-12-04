@@ -53,6 +53,10 @@ A necessidade da fonte de calor para acender tochas é desabilitada por padrão 
     {
         light_source = 13, 	-- Intensidade de iluminação da tocha (máximo é 14)
         
+        fuel = {"combust1", "combust2"}, 	-- Lista de combustiveis
+        
+        drop_on_water = "item_dropado", 	-- Item caido se molhar a tocha (por padrão é a tocha) <opicional>
+        
         nodes = { 				-- Blocos de tocha acesa
             node = "bloco_padrao", 		-- Bloco padrão padrão
             node_ceiling = "bloco_no_teto", -- Blocos colocados no teto <opicional>
@@ -72,9 +76,6 @@ A necessidade da fonte de calor para acender tochas é desabilitada por padrão 
             water_turn_off = {name="som", gain=1.0}, -- Som de apagar tocha com agua
         },
         
-        fuel = {"combustivel1", "combustivel2"}, -- Lista de combustiveis
-        
-        drop_on_water = "item_dropado", 	-- Item caido se molhar a tocha (por padrão é a tocha) <opicional>
     }
 
 #### Definições do combustivel (`register_fuel`)
