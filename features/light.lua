@@ -12,10 +12,10 @@
 -- Get light position
 -- Pegar coordenada de luz
 hardtorch.get_lpos = function(player)
-	local p = minetest.deserialize(minetest.serialize(player:getpos()))
-	p.y = p.y+1
+	local p = table.copy(player:get_pos())
+	p.y = p.y + 1
 	
-	return minetest.deserialize(minetest.serialize(p))
+	return table.copy(p)
 end
 
 
@@ -23,7 +23,7 @@ end
 -- Verificar luz
 local check_light_node = function(pos)
 	local meta = minetest.get_meta(pos)
-	if meta:get_string("nome") == "" then
+	if meta:get_string("name") == "" then
 		minetest.add_node(pos, {name="hardtorch:light_0"})
 		minetest.remove_node(pos)
 	end
@@ -55,8 +55,8 @@ for _,light in ipairs({"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "
 			
 			-- Check if player still has light
 			-- Verifica se jogador ainda tem luz no local
-			if hardtorch.in_loop[meta:get_string("nome")] 
-				and vector.equals(hardtorch.in_loop[meta:get_string("nome")].lpos, pos) == true
+			if hardtorch.in_loop[meta:get_string("name")] 
+				and vector.equals(hardtorch.in_loop[meta:get_string("name")].lpos, pos) == true
 			then
 				-- Continue to the next timer
 				-- Repete loop do timer
@@ -101,12 +101,13 @@ hardtorch.light_loop = function(name, torchname)
 			minetest.add_node(current_light_pos, {name="hardtorch:light_"..hardtorch.registered_torchs[torchname].light_source})
 		end
 		local meta = minetest.get_meta(current_light_pos)
-		meta:set_string("nome", name)
+		
+		meta:set_string("name", name)
 		minetest.get_node_timer(current_light_pos):start(1)
 		
 		-- Save new light position for this player
 		-- Salva novo local de luz desse jogar
-		hardtorch.in_loop[name].lpos = vector.round(current_light_pos)
+		hardtorch.in_loop[name].lpos = hardtorch.round_pos(current_light_pos)
 		
 		-- Convert old light nodes
 		minetest.register_alias(

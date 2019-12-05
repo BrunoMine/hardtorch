@@ -210,4 +210,13 @@ hardtorch.check_light_number = function(n)
 	return n
 end
 
+-- Round pos
+local world_limit = 100000
+hardtorch.round_pos = function(pos)
+	pos = vector.add(pos, world_limit)
+	pos = vector.round(pos)
+	pos = vector.subtract(pos, world_limit)
+	return pos
+end
+
 
