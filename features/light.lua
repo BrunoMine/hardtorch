@@ -71,6 +71,12 @@ for _,light in ipairs({"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "
 			return itemstack
 		end,
 	})
+	
+	-- Convert old light nodes
+	minetest.register_alias(
+		"hardtorch:luz_"..light, 
+		"hardtorch:light_"..light
+	)
 end
 
 
@@ -108,12 +114,6 @@ hardtorch.light_loop = function(name, torchname)
 		-- Save new light position for this player
 		-- Salva novo local de luz desse jogar
 		hardtorch.in_loop[name].lpos = hardtorch.round_pos(current_light_pos)
-		
-		-- Convert old light nodes
-		minetest.register_alias(
-			"hardtorch:luz_"..hardtorch.registered_torchs[torchname].light_source, 
-			"hardtorch:light_"..hardtorch.registered_torchs[torchname].light_source
-		)
 	end
 	minetest.after(0.45, hardtorch.light_loop, name, torchname)
 	

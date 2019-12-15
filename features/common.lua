@@ -213,10 +213,16 @@ end
 -- Round pos
 local world_limit = 100000
 hardtorch.round_pos = function(pos)
-	pos = vector.add(pos, world_limit)
-	pos = vector.round(pos)
-	pos = vector.subtract(pos, world_limit)
-	return pos
+	local n = { -- Negatives
+		x = pos.x < 0,
+		y = pos.y < 0,
+		z = pos.z < 0,
+	}
+	local npos = vector.round(pos)
+	if n.x == true and math.abs(npos.x - pos.x) == 0.5 then npos.x = npos.x - 1 end
+	if n.y == true and math.abs(npos.y - pos.y) == 0.5 then npos.y = npos.y - 1 end
+	if n.z == true and math.abs(npos.z - pos.z) == 0.5 then npos.z = npos.z - 1 end
+	return npos
 end
 
 
