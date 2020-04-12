@@ -1,6 +1,6 @@
 --[[
 	Mod HardTorch for Minetest
-	Copyright (C) 2017-2019 BrunoMine (https://github.com/BrunoMine)
+	Copyright (C) 2017-2020 BrunoMine (https://github.com/BrunoMine)
 	
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
@@ -245,6 +245,12 @@ hardtorch.register_tool = function(torchname, def)
 					pointed_thing) or itemstack
 			end
 			
+			-- Check protected area
+			-- Verifica se está protegido
+			if minetest.is_protected(pointed_thing.above, placer:get_player_name()) == true then
+				return itemstack
+			end
+			
 			-- Checks for water in torch sides
 			-- Verifica se tem agua nas laterais da tocha
 			if def.drop_on_water ~= false and hardtorch.check_node_sides(pointed_thing.above, {"group:water"}) == true then
@@ -363,7 +369,13 @@ hardtorch.register_tool = function(torchname, def)
 				return defnode.on_rightclick(under, node, placer, itemstack,
 					pointed_thing) or itemstack
 			end
-
+			
+			-- Check protected area
+			-- Verifica se está protegido
+			if minetest.is_protected(pointed_thing.above, placer:get_player_name()) == true then
+				return itemstack
+			end
+			
 			-- Check if it is already lit (avoid double loop)
 			-- Verifica se ja esta acesa (evitar loop duplo)
 			local loop = hardtorch.in_loop[placer:get_player_name()]
