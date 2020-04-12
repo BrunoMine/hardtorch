@@ -280,10 +280,13 @@ hardtorch.register_tool = function(torchname, def)
 			if hardtorch.registered_torchs[torchname].nodes_off then
 				itemstack:set_name(hardtorch.registered_torchs[torchname].nodes_off.node)
 			end
-			if not minetest.item_place(itemstack, placer, pointed_thing) then
-				return itemstack
+			
+			local sucess
+			itemstack, sucess = minetest.item_place(itemstack, placer, pointed_thing)
+			if sucess == nil then
+				return
 			end
-
+			
 			-- Remove item from inventory
 			itemstack:take_item()
 
@@ -407,10 +410,10 @@ hardtorch.register_tool = function(torchname, def)
 			else
 				itemstack:set_name(def.nodes.node_wall or def.nodes.node)
 			end
-
-			itemstack = minetest.item_place(itemstack, placer, pointed_thing, wdir)
-
-			if not itemstack then
+			
+			local sucess
+			itemstack, sucess = minetest.item_place(itemstack, placer, pointed_thing)
+			if sucess == nil then
 				return
 			end
 			
