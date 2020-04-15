@@ -283,7 +283,7 @@ hardtorch.register_tool = function(torchname, def)
 			
 			local sucess
 			itemstack, sucess = minetest.item_place(itemstack, placer, pointed_thing)
-			if sucess == nil then
+			if sucess == nil or sucess == false then
 				return
 			end
 			
@@ -413,7 +413,7 @@ hardtorch.register_tool = function(torchname, def)
 			
 			local sucess
 			itemstack, sucess = minetest.item_place(itemstack, placer, pointed_thing)
-			if sucess == nil then
+			if sucess == nil or sucess == false then
 				return
 			end
 			
