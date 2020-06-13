@@ -1,6 +1,6 @@
 --[[
 	Mod HardTorch for Minetest
-	Copyright (C) 2017-2019 BrunoMine (https://github.com/BrunoMine)
+	Copyright (C) 2017-2020 BrunoMine (https://github.com/BrunoMine)
 	
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
@@ -117,11 +117,12 @@ hardtorch.find_and_get_item = function(player, itemname)
 	
 	-- Check each list name
 	for list_name,list in pairs(inv:get_lists()) do
-		
-		-- Check each item
-		for i,item in ipairs(list) do
-			if item:get_name() == itemname then
-				return list_name, i, item
+		if list_name ~= "craftresult" and list_name ~= "craftpreview" then
+			-- Check each item
+			for i,item in ipairs(list) do
+				if item:get_name() == itemname then
+					return list_name, i, item
+				end
 			end
 		end
 	end
