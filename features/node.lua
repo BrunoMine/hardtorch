@@ -1,6 +1,6 @@
 --[[
 	Mod HardTorch for Minetest
-	Copyright (C) 2017-2019 BrunoMine (https://github.com/BrunoMine)
+	Copyright (C) 2017-2022 BrunoMine (https://github.com/BrunoMine)
 	
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
@@ -42,6 +42,7 @@ hardtorch.register_node = function(torchname, def)
 	-- Pega tocha e combustivel com desgaste
 	local on_dig = function(pos, node, digger)
 		if not hardtorch.registered_nodes[node.name] then return end
+		if not digger then return end -- Evita erro com jogador nulo
 		local meta = minetest.get_meta(pos)
 		local inv = digger:get_inventory()
 	
